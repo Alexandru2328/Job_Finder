@@ -1,4 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Job_Finder.Models
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    // Obține ruta curentă
+    var currentPath = HttpContextAccessor.HttpContext.Request.Path.Value.ToLowerInvariant();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -48,3 +60,24 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<div>
+    @if (!currentPath.Contains("/identity/account/login") && !currentPath.Contains("/identity/account/register"))
+    {
+        @if (SignInManager.IsSignedIn(User))
+        {
+            @RenderBody()
+        }
+        else
+        {
+            <p>Redirecting to login page...</p>
+            <script>
+                window.location.href = '@Url.Content("~/Identity/Account/Login")';
+            </script>
+        }
+    }
+    else
+    {
+        @RenderBody()
+    }
+</div>

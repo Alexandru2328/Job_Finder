@@ -27,7 +27,9 @@ namespace WebAppScraping.Controllers
         public async Task<IActionResult> Search(Search search)
         {
             IWebDriver driver = new ChromeDriver();
-            string url = "https://www.linkedin.com/jobs/search/?currentJobId=3937590388&distance=25&geoId=106670623&keywords=" + search.Text + "&origin=JOB_SEARCH_PAGE_KEYWORD_HISTORY&refresh=true";
+            string url = "https://www.linkedin.com/jobs/search/?currentJobId=3937590388&distance=25&geoId=106670623&keywords="
+                + search.Text + "&origin=JOB_SEARCH_PAGE_KEYWORD_HISTORY&refresh=true";
+
             driver.Navigate().GoToUrl(url);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1000);
             var lastHeight = (long)((IJavaScriptExecutor)driver).ExecuteScript("return document.body.scrollHeight");
@@ -68,13 +70,9 @@ namespace WebAppScraping.Controllers
                     };
                     _context.Jobs.AddRange(job);
                     await _context.SaveChangesAsync();
-
-
                 }
             }
-
             driver.Quit();
-
             var jobList = _context.Jobs.ToList();
             return View(jobList);
         }
