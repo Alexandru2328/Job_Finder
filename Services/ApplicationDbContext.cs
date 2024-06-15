@@ -11,6 +11,7 @@ namespace Job_Finder.Services
         {
             
         }
+        public DbSet<Job> Jobs { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -23,5 +24,6 @@ namespace Job_Finder.Services
             builder.Entity<IdentityRole>().HasData(admin, client);
 
         }
+        
     }
 }

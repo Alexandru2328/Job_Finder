@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Job_Finder.Models.Job>
+
+@{
+    ViewData["Title"] = "Web Scraping - Search Results";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Details</th>
+            <th>Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@Html.Raw(job.Title)</td>
+                <td>@Html.Raw(job.Company)</td>
+                <td>@Html.Raw(job.Details)</td>
+                <td>@Html.Raw(job.Link)</td>
+            </tr>
+        }
+    </tbody>
+</table>
