@@ -9,27 +9,26 @@
 <h4>Search</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <h1>Test</h1>
+    < div class="col-md-4">
         <form asp-action="Search">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @* <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Text" class="control-label"></label>
                 <input asp-for="Text" class="form-control" />
                 <span asp-validation-for="Text" class="text-danger"></span>
-            </div>
+            </div>  *@
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Search" class="btn btn-primary" />
             </div>
         </form>
-    </div>
+    </div> 
 </div>
 
-<div>
-    <a @ViewBag.Url</a>
-</div>
 
-@section Scripts {
+
+@* @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+} *@

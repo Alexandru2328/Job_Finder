@@ -34,7 +34,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=WebScraping}/{action=Index}/{id?}");
+    pattern: "{controller=WebScraping}/{action=Search}/{id?}");
 app.MapRazorPages();
 
 app.Run();
