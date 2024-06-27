@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Job_Finder.Models.Job>
+
+@{
+    ViewData["Title"] = "Web Scraping - Search Results";
+}
+<div>
+    @foreach(var job in Model)
+    {
+        if (job.Data > ViewBag.UserData)
+        {
+            <div class="card text-center">
+                <div class="card-header">
+                    @Html.Raw(job.Title)
+                </div>
+                <div class="card-body">
+                    @Html.Raw(job.Link)
+                    
+                </div>
+                <div class="card-footer text-muted">
+                    @Html.Raw(job.Details)
+                </div>
+                <a asp-action="View" asp-route-id="@job.Id">View</a>
+            </div>
+            <br />
+        }
+    }
+</div>

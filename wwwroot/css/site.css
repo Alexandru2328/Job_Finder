@@ -18,5 +18,28 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin-bottom: 65px;
 }
+.notification {
+    background-color:aliceblue;
+    color:black;
+    text-decoration: none;
+    padding: 10px 15px;
+    position: relative;
+    display: inline-block;
+    border-radius: 5px;
+}
+
+    .notification:hover {
+        background: blue;
+    }
+
+    .notification .badge {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        padding: 5px 10px;
+        border-radius: 50%;
+        background: red;
+        color: white;
+    }

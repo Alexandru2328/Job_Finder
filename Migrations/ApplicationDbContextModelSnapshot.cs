@@ -52,6 +52,9 @@ namespace Job_Finder.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("LastAdSeen")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -114,6 +117,9 @@ namespace Job_Finder.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -164,13 +170,13 @@ namespace Job_Finder.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c778fc6e-f8d6-4032-9f47-3f1ef5d3c9ea",
+                            Id = "676716a7-022c-45ba-ab9a-ea11d4092894",
                             Name = "admin",
                             NormalizedName = "client"
                         },
                         new
                         {
-                            Id = "0d578436-2c4d-480a-bd2f-f01f4e2d38e7",
+                            Id = "9e9fb18b-fade-4ab5-89ea-8ffff537536a",
                             Name = "client"
                         });
                 });

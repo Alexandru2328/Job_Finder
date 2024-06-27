@@ -1,4 +1,4 @@
-using Job_Finder.Models;
+﻿using Job_Finder.Models;
 using Job_Finder.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +17,10 @@ namespace WebAppScraping.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var jobList = await _context.Jobs.ToListAsync();
+            return View(jobList);
         }
 
         public async Task<IActionResult> Search()
@@ -43,7 +44,11 @@ namespace WebAppScraping.Controllers
 
         private async Task SearchLinkedin(string search)
         {
-            using (IWebDriver driver = new ChromeDriver())
+            var options = new ChromeOptions();
+            options.AddArgument("--headless"); 
+            options.AddArgument("--disable-gpu");
+
+            using (IWebDriver driver = new ChromeDriver(options))
             {
                 try 
                 {
@@ -91,19 +96,23 @@ namespace WebAppScraping.Controllers
                         bool jobExists = await _context.Jobs.AnyAsync(j => j.Id_Traking == trackingId);
                         if (!jobExists)
                         {
-                            _context.Jobs.Add(job);
+                                job.Data = DateTime.Now;
+                                _context.Jobs.Add(job);
                             await _context.SaveChangesAsync();
                         }
                     }
                 }
-                } 
-                catch (Exception ex) { }
-                            }
+            } catch (Exception ex) { }
         }
+    }
 
         private async Task SearchIndeed(string search)
         {
-            using (IWebDriver driver = new ChromeDriver())
+            var options = new ChromeOptions();
+            options.AddArgument("--headless"); 
+            options.AddArgument("--disable-gpu");
+
+            using (IWebDriver driver = new ChromeDriver(options))
             {
                 string url = "https://ro.indeed.com/jobs?q=" + search + "&l=Romania&from=searchOnDesktopSerp&vjk=a1b8bf2caba6b830";
                 driver.Navigate().GoToUrl(url);
@@ -114,7 +123,7 @@ namespace WebAppScraping.Controllers
                     while (true)
                     {
                         ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
-                        await Task.Delay(1500);
+                        await Task.Delay(1000);
                         try
                         {
                             var close = driver.FindElement(By.ClassName("css-yi9ndv"));
@@ -141,12 +150,14 @@ namespace WebAppScraping.Controllers
                                     Link = (string)((IJavaScriptExecutor)driver).ExecuteScript("return arguments[0].outerHTML;", link),
                                     Title = (string)((IJavaScriptExecutor)driver).ExecuteScript("return arguments[0].outerHTML;", titleElement),
                                     Company = (string)((IJavaScriptExecutor)driver).ExecuteScript("return arguments[0].outerHTML;", companyEl),
-                                    Details = (string)((IJavaScriptExecutor)driver).ExecuteScript("return arguments[0].outerHTML;", detailsEl)
+                                    Details = (string)((IJavaScriptExecutor)driver).ExecuteScript("return arguments[0].outerHTML;", detailsEl),
+                                    
                                 };
 
                                 bool jobExists = await _context.Jobs.AnyAsync(j => j.Id_Traking == trackingId);
                                 if (!jobExists)
                                 {
+                                    job.Data = DateTime.Now;
                                     _context.Jobs.Add(job);
                                     await _context.SaveChangesAsync();
                                 }

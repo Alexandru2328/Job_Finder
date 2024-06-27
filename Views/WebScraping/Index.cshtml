@@ -1,34 +1,40 @@
-﻿@model Job_Finder.Models.Search
-
+﻿@model IEnumerable<Job_Finder.Models.Job>
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<h4>Search</h4>
 <hr />
 <div class="row">
-    <h1>Test</h1>
-    < div class="col-md-4">
-        <form asp-action="Search">
-            @* <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Text" class="control-label"></label>
-                <input asp-for="Text" class="form-control" />
-                <span asp-validation-for="Text" class="text-danger"></span>
-            </div>  *@
-            <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-primary" />
-            </div>
-        </form>
-    </div> 
+    <form asp-action="Search">
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    </form>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Company</th>
+                    <th>Details</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var job in Model)
+                {
+                    <tr>
+                        <td>@Html.Raw(job.Title)</td>
+                        <td>@Html.Raw(job.Company)</td>
+                        <td>@Html.Raw(job.Details)</td>
+                        <td>@Html.Raw(job.Link)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 </div>
 
 
 
-@* @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-} *@
+
+

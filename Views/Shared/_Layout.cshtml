@@ -6,10 +6,6 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-@{
-    // Obține ruta curentă
-    var currentPath = HttpContextAccessor.HttpContext.Request.Path.Value.ToLowerInvariant();
-}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +28,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="WebScraping" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="WebScraping" asp-action="Index">All Job</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="WebScraping" asp-action="Search">Search</a>
@@ -48,36 +44,9 @@
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - Job_Finder - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
-<div>
-    @if (!currentPath.Contains("/identity/account/login") && !currentPath.Contains("/identity/account/register"))
-    {
-        @if (SignInManager.IsSignedIn(User))
-        {
-            @RenderBody()
-        }
-        else
-        {
-            <p>Redirecting to login page...</p>
-            <script>
-                window.location.href = '@Url.Content("~/Identity/Account/Login")';
-            </script>
-        }
-    }
-    else
-    {
-        @RenderBody()
-    }
-</div>
