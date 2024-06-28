@@ -26,6 +26,15 @@ namespace Job_Finder.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var job = await _context.Jobs.FindAsync(id);
+            foreach (var jobs in _context.Jobs)
+            {
+                if (job.Data > jobs.Data && jobs.Data > user.LastAdSeen)
+                {
+                    DateTime aux = job.Data;
+                    job.Data = jobs.Data;
+                    jobs.Data = aux;
+                }
+            }
             user.LastAdSeen = job.Data;
             await _context.SaveChangesAsync();
             return View(job);

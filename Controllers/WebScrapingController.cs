@@ -25,8 +25,8 @@ namespace WebAppScraping.Controllers
 
         public async Task<IActionResult> Search()
         {
-            List<string> keyWords = new List<string>{"junior web developer", "front-end web developer",
-                 "back-end web developer", "full-stack web developer"};
+            List<string> keyWords = new List<string>{"junior web developer", "front-end software developer",
+                 "back-end software developer", "full-stack software developer"};
 
             foreach (string key in keyWords)
             {
@@ -110,13 +110,13 @@ namespace WebAppScraping.Controllers
         {
             var options = new ChromeOptions();
             options.AddArgument("--headless"); 
-            options.AddArgument("--disable-gpu");
+            //options.AddArgument("--disable-gpu");
 
             using (IWebDriver driver = new ChromeDriver(options))
             {
                 string url = "https://ro.indeed.com/jobs?q=" + search + "&l=Romania&from=searchOnDesktopSerp&vjk=a1b8bf2caba6b830";
                 driver.Navigate().GoToUrl(url);
-                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(500);
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1000);
                 var lastHeight = (long)((IJavaScriptExecutor)driver).ExecuteScript("return document.body.scrollHeight");
                 try
                 {
@@ -180,7 +180,8 @@ namespace WebAppScraping.Controllers
                         lastHeight = newHeight;
                     }
 
-                } catch (Exception ex) { }
+                }
+                catch (Exception ex) { }
             }
         }
     }

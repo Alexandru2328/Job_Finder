@@ -4,5 +4,6 @@
             $('#notificationsCount').text(data.count);
         });
     }
+    fetchNotificationsCount();
 
-    setInterval(fetchNotificationsCount, 1000);
+    setInterval(fetchNotificationsCount, 100);

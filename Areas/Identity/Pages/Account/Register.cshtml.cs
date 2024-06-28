@@ -126,6 +126,7 @@ namespace Job_Finder.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     CreateAt = DateTime.Now,
+                    LastAdSeen = DateTime.Now,
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
