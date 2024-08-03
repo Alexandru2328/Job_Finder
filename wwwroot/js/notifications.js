@@ -6,4 +6,4 @@
     }
     fetchNotificationsCount();
 
-    setInterval(fetchNotificationsCount, 100);
+    setInterval(fetchNotificationsCount, 1500);

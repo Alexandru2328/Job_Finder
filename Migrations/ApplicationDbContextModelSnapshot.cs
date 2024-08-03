@@ -17,10 +17,38 @@ namespace Job_Finder.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AutoApply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DomainExperience")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPlatformEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPlatformPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AutoApply");
+                });
 
             modelBuilder.Entity("Job_Finder.Models.ApplicationUser", b =>
                 {
@@ -34,12 +62,18 @@ namespace Job_Finder.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("AutoAplly")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DomainExperience")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -55,6 +89,12 @@ namespace Job_Finder.Migrations
                     b.Property<DateTime>("LastAdSeen")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("LastDataApply")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastDataSearch")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -64,6 +104,10 @@ namespace Job_Finder.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -91,6 +135,17 @@ namespace Job_Finder.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("UserPlatformEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPlatformPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("VipUser")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -132,6 +187,10 @@ namespace Job_Finder.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -139,6 +198,56 @@ namespace Job_Finder.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Jobs");
+                });
+
+            modelBuilder.Entity("Job_Finder.Models.UserCookie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Expiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HttpOnly")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SameSite")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Secure")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserCookies");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -170,13 +279,13 @@ namespace Job_Finder.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "676716a7-022c-45ba-ab9a-ea11d4092894",
+                            Id = "1a4f6246-c2cb-4a02-ba03-ff7978e5641b",
                             Name = "admin",
                             NormalizedName = "client"
                         },
                         new
                         {
-                            Id = "9e9fb18b-fade-4ab5-89ea-8ffff537536a",
+                            Id = "615e2cd6-bdc7-496a-b8ff-c3fd85687125",
                             Name = "client"
                         });
                 });

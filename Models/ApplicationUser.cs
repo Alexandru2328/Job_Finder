@@ -10,6 +10,13 @@ namespace Job_Finder.Models
         public string Address { get; set; } = String.Empty;
         public DateTime LastAdSeen { get; set; }
         public DateTime CreateAt { get; set; }
-
+        public bool AutoAplly { get; set; } = false;
+        public DateTime LastDataSearch { get; set; }
+        public DateTime LastDataApply { get; set; }
+        public bool VipUser { get; set; } = false;
+        public string UserPlatformEmail { get; set; } = string.Empty;
+        public string UserPlatformPassword { get; set; } = string.Empty;
+        public int DomainExperience { get; set; } = 0;
+        public string Message { get; set; } = string.Empty;
     }
 }

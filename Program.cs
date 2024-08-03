@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Job_Finder.Models;
 using WebAppScraping.Controllers;
+using Job_Finder.Services.AutoApplyService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
@@ -15,15 +15,19 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 });
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<ApplicationDbContext>();
-
+builder.Services.AddTransient<AutoApplyLinkedinService>();
+builder.Services.AddTransient<AutoApplyIndeed>();
+builder.Services.AddTransient<AutoApplyEJobs>();
+builder.Services.AddTransient<AutoApplyBestJobsService>();
+builder.Services.AddTransient<WebScrapingService>();
+builder.Services.AddTransient<Automation>();
+builder.Services.AddTransient<SaveJobs>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -36,7 +40,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=WebScraping}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

@@ -1,0 +1,54 @@
+﻿@model AutoApply
+
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>View</h1>
+
+<div>
+    <h4>AutoApply</h4>
+    <hr />
+
+    <div class="col-md-9">
+
+
+        <h3>Auto Apply Manager</h3>
+
+
+        <div class="row">
+            <div class="col-md-6">
+                <form id="profile-form" method="post" novalidate="novalidate">
+
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please choose your username." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformEmail)">
+                        <label asp-for="UserPlatformEmail" class="form-label"></label>
+                    </div>
+                    <hr />
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please choose your username." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.DomainExperience)">
+                        <label asp-for="DomainExperience" class="form-label"></label>
+                    </div>
+                    <hr />
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please choose your username." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.Message)">
+                        <label asp-for="Message" class="form-label"></label>
+                    </div>
+                    <hr />
+                    <div class="form-floating mb-3">
+                        <input  class="form-control" placeholder="Please choose your username." disabled="" type="password" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformPassword)">
+                        <label asp-for="UserPlatformPassword" class="form-label"></label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <a asp-controller="AutoApply" asp-action="Apply" class="btn btn-success">Start a new Auto Apply Session</a>
+        </div>
+    </div>
+</div>
+<div>
+    <a  asp-controller="AutoApply" asp-action="Edit" >Edit</a> 
+</div>

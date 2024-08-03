@@ -39,7 +39,7 @@ namespace Job_Finder.Controllers
             await _context.SaveChangesAsync();
             return View(job);
         }
-        public async Task <IActionResult> Notification() 
+        public async Task<IActionResult> Notification()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -52,6 +52,21 @@ namespace Job_Finder.Controllers
                 .CountAsync();
 
             return Json(new { count });
+        }
+        public async Task<IActionResult> SeeAll()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            DateTime aux = DateTime.MinValue;
+            foreach (var job in _context.Jobs)
+            {
+                if (job.Data > aux)
+                {
+                    job.Data = aux;
+                }
+                user.LastAdSeen = aux;
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");  
         }
     }
 }

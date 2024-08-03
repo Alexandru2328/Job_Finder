@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Job_Finder.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreat : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -37,6 +37,14 @@ namespace Job_Finder.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastAdSeen = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AutoAplly = table.Column<bool>(type: "bit", nullable: false),
+                    LastDataSearch = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastDataApply = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VipUser = table.Column<bool>(type: "bit", nullable: false),
+                    UserPlatformEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserPlatformPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DomainExperience = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -58,6 +66,22 @@ namespace Job_Finder.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AutoApply",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserPlatformEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserPlatformPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DomainExperience = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AutoApply", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Jobs",
                 columns: table => new
                 {
@@ -68,11 +92,34 @@ namespace Job_Finder.Migrations
                     Link = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Company = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Data = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Platform = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Jobs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserCookies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Domain = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Expiry = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Secure = table.Column<bool>(type: "bit", nullable: false),
+                    HttpOnly = table.Column<bool>(type: "bit", nullable: false),
+                    SameSite = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Platform = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserCookies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,8 +233,8 @@ namespace Job_Finder.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "676716a7-022c-45ba-ab9a-ea11d4092894", null, "admin", "client" },
-                    { "9e9fb18b-fade-4ab5-89ea-8ffff537536a", null, "client", null }
+                    { "1a4f6246-c2cb-4a02-ba03-ff7978e5641b", null, "admin", "client" },
+                    { "615e2cd6-bdc7-496a-b8ff-c3fd85687125", null, "client", null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -249,7 +296,13 @@ namespace Job_Finder.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "AutoApply");
+
+            migrationBuilder.DropTable(
                 name: "Jobs");
+
+            migrationBuilder.DropTable(
+                name: "UserCookies");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
