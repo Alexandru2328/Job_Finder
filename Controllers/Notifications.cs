@@ -1,5 +1,6 @@
 ﻿using Job_Finder.Models;
 using Job_Finder.Services;
+using Job_Finder.Services.AutoApplyService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,12 +9,14 @@ namespace Job_Finder.Controllers
 {
     public class Notifications : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public Notifications(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SaveJobs _saveJobs;
+        public Notifications(AppDbContext context, UserManager<AppUser> userManager, SaveJobs saveJobs)
         {
             _context = context;
             _userManager = userManager;
+            _saveJobs = saveJobs;
         }
         public async Task<IActionResult> Index()
         {
@@ -21,6 +24,11 @@ namespace Job_Finder.Controllers
             var jobList = await _context.Jobs.ToListAsync();
             ViewBag.UserData = user.LastAdSeen;
             return View(jobList);
+        }
+        public async Task<IActionResult> Apply()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return View(await _context.UserNotifications.ToListAsync());
         }
         public async Task<IActionResult> View(int id)
         {
@@ -39,7 +47,17 @@ namespace Job_Finder.Controllers
             await _context.SaveChangesAsync();
             return View(job);
         }
-        public async Task<IActionResult> Notification()
+
+        public async Task<IActionResult> SetAsSaved(int id)
+        {
+            var notification = await _context.UserNotifications.FindAsync(id);
+            var job = await _context.Jobs.FindAsync(notification.JobId);
+            await _saveJobs.SaveAsAppliedAsync(job);
+            notification.ApplicationStatus = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Apply");
+        }
+        public async Task<IActionResult>Notification()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -47,12 +65,43 @@ namespace Job_Finder.Controllers
                 return Unauthorized();
             }
 
-            var count = await _context.Jobs
+            var countJobs = await _context.Jobs
                 .Where(n => n.Data > user.LastAdSeen)
                 .CountAsync();
-
-            return Json(new { count });
+            var countNotification = await _context.UserNotifications.
+                Where(n => n.UserId == user.Id && !n.ApplicationStatus).CountAsync(); 
+            int count = countJobs + countNotification;
+            return Json(new {count});
         }
+        public async Task<IActionResult> NotificationJobs()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var countJobs = await _context.Jobs
+                .Where(n => n.Data > user.LastAdSeen)
+                .CountAsync();
+            return Json(new { count = countJobs });
+        }
+
+        public async Task<IActionResult> NotificationApply()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var countNotification = await _context.UserNotifications
+                .Where(n => n.UserId == user.Id && !n.ApplicationStatus)
+                .CountAsync();
+            return Json(new { count = countNotification });
+        }
+
+
         public async Task<IActionResult> SeeAll()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -61,10 +110,10 @@ namespace Job_Finder.Controllers
             {
                 if (job.Data > aux)
                 {
-                    job.Data = aux;
+                    aux = job.Data;
                 }
-                user.LastAdSeen = aux;
             }
+            user.LastAdSeen = aux;
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");  
         }

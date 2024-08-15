@@ -18,13 +18,13 @@ namespace Job_Finder.Services.AutoApplyService
 {
     public class AutoApplyLinkedinService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebDriver _driver;
         private readonly SaveJobs _saveJobs;
 
-        public AutoApplyLinkedinService(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+        public AutoApplyLinkedinService(AppDbContext context, UserManager<AppUser> userManager,
             IHttpContextAccessor httpContextAccessor, SaveJobs saveJobs)
         {
             _context = context;
@@ -35,7 +35,7 @@ namespace Job_Finder.Services.AutoApplyService
 
 
 
-        public async Task<ApplicationUser> GetCurrentUserAsync()
+        public async Task<AppUser> GetCurrentUserAsync()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _userManager.FindByIdAsync(userId);
@@ -43,7 +43,14 @@ namespace Job_Finder.Services.AutoApplyService
         public async Task ApplyLinkedInJobs(int id)
         {
             var options = new ChromeOptions();
-            options.AddArgument("--start-maximized");
+            options.AddArgument("--headless");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--disable-blink-features=AutomationControlled");
+            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
+            //options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.linkedin.com/home");
@@ -55,7 +62,7 @@ namespace Job_Finder.Services.AutoApplyService
             {
                 await AuthenticateLinkedIn();
             }
-            await Task.Delay(2000);
+            await Task.Delay(9000);
             var job = await _context.Jobs.FindAsync(id);
             _driver.Navigate().GoToUrl($"{job.Link}");
             bool applyStatus = await AutoApply();
@@ -63,12 +70,13 @@ namespace Job_Finder.Services.AutoApplyService
             if (applyStatus)
             {
                 await _saveJobs.SaveAsAppliedAsync(job);
+                Console.WriteLine("sa salvat");
             }
             else
             {
                 await _saveJobs.SaveAsNotAppliedAsync(job);
             }
-            SaveCookies();
+           await SaveCookies();
         }
 
             public async Task ApplyLinkedInJobs()
@@ -143,7 +151,7 @@ namespace Job_Finder.Services.AutoApplyService
                 radioButton.Click();
             }
             // <= select option for select =>
-            List<string> keywords = new List<string> { "romania", "yes", "da", "male", "intermediate", "yes, i am a citizen." };
+            List<string> keywords = new List<string> { "romania", "yes", "da", "male", "intermediate", "yes, i am a citizen.", "LinkedIn" };
 
             var selectElements = _driver.FindElements(By.TagName("select"));
             foreach (var select in selectElements)
@@ -169,9 +177,17 @@ namespace Job_Finder.Services.AutoApplyService
                 }
             }
             // <= I Agree Terms & Conditions =>
-            var label = _driver.FindElement(By.CssSelector("label[data-test-text-selectable-option__label]"));
-            label.Click();
+            try
+            {
+                var label = _driver.FindElement(By.CssSelector("label[data-test-text-selectable-option__label]"));
+                label.Click();
 
+            } catch (Exception ex){ }
+            await Task.Delay(1000);
+            try
+            {
+                var nextStep = _driver.FindElement(By.XPath("//*[@aria-label='Examinați candidatura dvs.']"));
+            } catch (Exception ex) { }
         }
 
         public async Task<bool> IsUserLoggedOnLinkedIn()
@@ -301,9 +317,8 @@ namespace Job_Finder.Services.AutoApplyService
                         var needToByCompleteds = _driver.FindElement(By.ClassName("artdeco-inline-feedback__message"));
                         if (needToByCompleteds.Displayed)
                         {
-                            var http = _driver.PageSource;
                             Console.WriteLine("trebuie completat");
-                            AutoCompletationLinkedin();
+                            await AutoCompletationLinkedin();
                             await Task.Delay(1500);
                         }
                     }
@@ -319,13 +334,14 @@ namespace Job_Finder.Services.AutoApplyService
             // <= press review btn =>
             List<string> nameReview = new List<string>()
             {
-                "Review your application",
+                //"Review your application",
                 "Examinați candidatura dvs."
             };
             bool isReview = false;
 
             foreach (var ele in nameReview)
             {
+                   
                 try
                 {
                     var nextStep = _driver.FindElement(By.XPath("//*[@aria-label='" + ele + "']"));
@@ -334,11 +350,14 @@ namespace Job_Finder.Services.AutoApplyService
                     var needToByCompleted = _driver.FindElement(By.ClassName("artdeco-inline-feedback__message"));
                     while (needToByCompleted.Displayed)
                     {
-                        var http = _driver.PageSource;
-                        Console.WriteLine("trebuie completat");
-                        AutoCompletationLinkedin();
-                        await Task.Delay(1500);
                         nextStep.Click();
+                        Console.WriteLine("trebuie completat");
+                        await AutoCompletationLinkedin();
+                        nextStep.Click();
+                    }
+                    while (nextStep == null) 
+                    {
+                         nextStep.Click();
                     }
                 }
                 catch (Exception ex) { }

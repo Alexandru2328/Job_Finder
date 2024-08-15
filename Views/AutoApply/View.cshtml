@@ -1,4 +1,4 @@
-﻿@model AutoApply
+﻿@model AppUser
 
 @{
     ViewData["Title"] = "View";
@@ -45,10 +45,12 @@
         </div>
 
         <div>
-            <a asp-controller="AutoApply" asp-action="Apply" class="btn btn-success">Start a new Auto Apply Session</a>
+            <a asp-controller="AutoApply" asp-action="Edit" class="btn btn-success">Edit</a>
+            
         </div>
     </div>
 </div>
+<br />
 <div>
-    <a  asp-controller="AutoApply" asp-action="Edit" >Edit</a> 
+    <a asp-controller="AutoApply" asp-action="AutoApplySession" class="btn btn-success">Start a new Auto Apply Session</a>
 </div>

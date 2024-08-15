@@ -9,33 +9,52 @@ using Microsoft.Extensions.Options;
 using OpenQA.Selenium.Support.UI;
 using Microsoft.AspNetCore.Identity;
 using Job_Finder.Services.AutoApplyService;
+using System.Security.Claims;
 
 namespace Job_Finder.Services
 {
     public class WebScrapingService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
         private readonly AutoApplyLinkedinService _autoApplyService ;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebDriver _driver;
-        public WebScrapingService(ApplicationDbContext context, AutoApplyLinkedinService autoApplyService,
-            UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public WebScrapingService(AppDbContext context, AutoApplyLinkedinService autoApplyService,
+            UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _autoApplyService = autoApplyService;
             
         }
 
+        public async Task<AppUser> GetCurrentUserAsync()
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return await _userManager.FindByIdAsync(userId);
+        }
         public async Task SearchJobs()
         {
-            _driver = new ChromeDriver();
+            var options = new ChromeOptions();
+            options.AddArgument("--headless");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--disable-blink-features=AutomationControlled");
+            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
+            var user = await GetCurrentUserAsync();
+            user.LastDataSearch = DateTime.Now;
+
+            _driver = new ChromeDriver(options);
             Linkedin linkedin = new Linkedin(_context, _driver);
             EJobs eJobs = new EJobs(_context, _driver);
             BestJobs bestJobs = new BestJobs(_context, _driver);
             Indeed indeed = new Indeed(_context, _driver);
-            List<string> keyWords = new List<string>{"junior web developer", "software developer",
-                ".Net Developer"};
+
+            List<string> keyWords = new List<string> { "junior web developer", "software developer", ".Net Developer" };
+
+
             foreach (string key in keyWords)
             {
                 await eJobs.searchEJobs(key);
@@ -43,7 +62,10 @@ namespace Job_Finder.Services
                 await bestJobs.searchBestJobs(key);
                 await indeed.SearchIndeed(key);
             }
+
+            _driver.Quit();
         }
+
 
         public async Task<List<Job>> GetAllJobs()
         {

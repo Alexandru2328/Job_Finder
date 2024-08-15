@@ -15,13 +15,13 @@ namespace Job_Finder.Services.AutoApplyService
 {
     public class AutoApplyBestJobsService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebDriver _driver;
         public readonly SaveJobs _saveJobs;
 
-        public AutoApplyBestJobsService(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+        public AutoApplyBestJobsService(AppDbContext context, UserManager<AppUser> userManager,
             IHttpContextAccessor httpContextAccessor, SaveJobs saveJobs)
         {
             _context = context;
@@ -30,7 +30,7 @@ namespace Job_Finder.Services.AutoApplyService
             _saveJobs = saveJobs;
         }
 
-        private async Task<ApplicationUser> GetCurrentUserAsync()
+        private async Task<AppUser> GetCurrentUserAsync()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _userManager.FindByIdAsync(userId);
@@ -38,7 +38,14 @@ namespace Job_Finder.Services.AutoApplyService
         public async Task autoApplyBestjobs(int id)
         {
             var options = new ChromeOptions();
-            options.AddArgument("--start-maximized");
+            options.AddArgument("--headless");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--disable-blink-features=AutomationControlled");
+            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
+            //options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.bestjobs.eu/ro/login");
@@ -53,7 +60,9 @@ namespace Job_Finder.Services.AutoApplyService
                 await AuthenticateBestJobs();
             }
             var job = await _context.Jobs.FindAsync(id);
+            await Task.Delay(1000);
             _driver.Navigate().GoToUrl($"{job.Link}");
+            await Task.Delay(1000);
             bool applyStatus = await AutoApply();
             await Task.Delay(1000);
             if (applyStatus)
@@ -64,13 +73,20 @@ namespace Job_Finder.Services.AutoApplyService
             {
                 await _saveJobs.SaveAsNotAppliedAsync(job);
             }
-            SaveCookies();
+            await SaveCookies();
         }
 
             public async Task autoApplyBestjobs()
         {
             var options = new ChromeOptions();
-            options.AddArgument("--start-maximized");
+            options.AddArgument("--headless");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--disable-blink-features=AutomationControlled");
+            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
+            //options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.bestjobs.eu/ro/login");
@@ -138,7 +154,10 @@ namespace Job_Finder.Services.AutoApplyService
                 button.Click();
                 return true;
             }
-            catch (Exception) { }
+            catch (NoSuchElementException ex) 
+            {
+                return true;
+            } catch (Exception ex) { }
             return false;
         }
 

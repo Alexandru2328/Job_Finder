@@ -14,10 +14,10 @@ namespace Job_Finder.WebScraping
 {
     public class Linkedin
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
         private readonly AutoApplyLinkedinService _autoApplyService;
         private IWebDriver _driver;
-        public Linkedin(ApplicationDbContext context, IWebDriver driver)
+        public Linkedin(AppDbContext context, IWebDriver driver)
         {
             _context = context;
             _driver = driver;
@@ -45,17 +45,20 @@ namespace Job_Finder.WebScraping
                             Title = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", title),
                             Company = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", company),
                             Details = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", details),
-                            Platform = "Linkedin"
+                            Platform = "Linkedin",
+                            
                         };
 
                         bool jobExists = await _context.Jobs.AnyAsync(j => j.Id_Traking == trackingId);
                         if (!jobExists)
                         {
+                            await Task.Delay(1000);
                             job.Data = DateTime.Now;
                             _context.Jobs.Add(job);
                             await _context.SaveChangesAsync();
                         }
                     }
+                   
                 }
             } catch (Exception ex) { }
         }
@@ -66,7 +69,6 @@ namespace Job_Finder.WebScraping
             int nrOfEqual = 0;
             while (true)
             {
-
                 IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
                 js.ExecuteScript("window.scrollBy(0,950)", "");
                 await Task.Delay(200);
@@ -90,7 +92,6 @@ namespace Job_Finder.WebScraping
         }
         public async Task searchLinkedin(string search)
         {
-            //_driver = new ChromeDriver();
             try
             {
                 string url = "https://www.linkedin.com/jobs/search/?currentJobId=3937590388&distance=25&geoId=106670623&keywords="
@@ -102,7 +103,6 @@ namespace Job_Finder.WebScraping
                 int numberOfMatches = 0;
                 while (true)
                 {
-
                     await scrollLinkedin();
                     await Task.Delay(500);
                     await saveJobLinkedin();
@@ -124,13 +124,11 @@ namespace Job_Finder.WebScraping
                         {
                             break;
                         }
-                }
+                    }
                     catch (Exception ex) 
                     {
                         break;
                     }
-
-                   
                 }
             }
             catch (Exception ex) { }

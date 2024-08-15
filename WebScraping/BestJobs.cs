@@ -12,15 +12,14 @@ namespace Job_Finder.WebScraping
 {
     public class BestJobs
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
         private IWebDriver _driver;
-        public BestJobs(ApplicationDbContext context, IWebDriver driver)
+        public BestJobs(AppDbContext context, IWebDriver driver)
         {
             _context = context;
             _driver = driver;
 
         }
-
         private async Task scrollBestJobs()
         {
             try
@@ -30,11 +29,8 @@ namespace Job_Finder.WebScraping
                 int nrOfEqual = 0;
                 while (true)
                 {
-
                     IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
                     js.ExecuteScript("window.scrollBy(0,850)", "");
-                    //((IJavaScriptExecutor)_driver).ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
-
                     await Task.Delay(300);
                     var newHeight = (long)((IJavaScriptExecutor)_driver).ExecuteScript("return document.body.scrollHeight");
                     if (newHeight == lastHeight)
@@ -55,6 +51,23 @@ namespace Job_Finder.WebScraping
                 }
             } catch (Exception ex) { }
            
+        }
+
+        private async Task<bool> CheckAds(string title)
+        {
+            List<string> keyWords = new List<string>() {
+                "developer", "programator", "web","software", "frontend",
+                "software","engineer", ".net", "c#", "javascript", "it", "junior"
+            };
+            string thisTitle = title.ToLower();
+            foreach (string word in keyWords)
+            {
+                if (thisTitle.Contains(word)) 
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         private async Task saveAdsBestJobs()
         {
@@ -80,12 +93,15 @@ namespace Job_Finder.WebScraping
                             Title = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", titleElement),
                             Company = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", companyNameElement),
                             Details = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", detailsEl),
-                            Platform = "BestJobs"
+                            Platform = "BestJobs",
+                            Data = DateTime.Now
                         };
 
                         bool jobExists = await _context.Jobs.AnyAsync(j => j.Id_Traking == trackingId);
-                        if (!jobExists)
+                        bool isSuitable = await CheckAds(job.Title);
+                        if (!jobExists && isSuitable)
                         {
+                            await Task.Delay(1000);
                             job.Data = DateTime.Now;
                             _context.Jobs.Add(job);
                             await _context.SaveChangesAsync();

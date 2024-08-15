@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Job_Finder.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,22 +63,6 @@ namespace Job_Finder.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AutoApply",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserPlatformEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserPlatformPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DomainExperience = table.Column<int>(type: "int", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AutoApply", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -228,13 +212,47 @@ namespace Job_Finder.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserNotifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    JobId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationStatus = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserNotificationId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserNotifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserNotifications_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserNotifications_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserNotifications_UserNotifications_UserNotificationId",
+                        column: x => x.UserNotificationId,
+                        principalTable: "UserNotifications",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1a4f6246-c2cb-4a02-ba03-ff7978e5641b", null, "admin", "client" },
-                    { "615e2cd6-bdc7-496a-b8ff-c3fd85687125", null, "client", null }
+                    { "271eec0d-6288-4391-962f-3d74d231cdbc", null, "admin", "client" },
+                    { "8d377b2a-0cae-497d-96ed-78d86b2e3524", null, "client", null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -275,6 +293,21 @@ namespace Job_Finder.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNotifications_JobId",
+                table: "UserNotifications",
+                column: "JobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNotifications_UserId",
+                table: "UserNotifications",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNotifications_UserNotificationId",
+                table: "UserNotifications",
+                column: "UserNotificationId");
         }
 
         /// <inheritdoc />
@@ -296,19 +329,19 @@ namespace Job_Finder.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AutoApply");
-
-            migrationBuilder.DropTable(
-                name: "Jobs");
-
-            migrationBuilder.DropTable(
                 name: "UserCookies");
+
+            migrationBuilder.DropTable(
+                name: "UserNotifications");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Jobs");
         }
     }
 }

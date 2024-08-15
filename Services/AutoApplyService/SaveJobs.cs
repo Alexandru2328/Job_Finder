@@ -7,18 +7,20 @@ namespace Job_Finder.Services.AutoApplyService
 {
     public class SaveJobs
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly NotificationServices _notification;
 
-        public SaveJobs(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public SaveJobs(AppDbContext context, UserManager<AppUser> userManager, IHttpContextAccessor httpContextAccessor, NotificationServices notification)
         {
             _context = context;
             _userManager = userManager;
-            _httpContextAccessor = httpContextAccessor; 
+            _httpContextAccessor = httpContextAccessor;
+            _notification = notification;
         }
 
-        public async Task<ApplicationUser> GetCurrentUserAsync()
+        public async Task<AppUser> GetCurrentUserAsync()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _userManager.FindByIdAsync(userId);
@@ -34,19 +36,25 @@ namespace Job_Finder.Services.AutoApplyService
                 return;
             }
 
-            DateTime aux = job.Data;
-            job.Data = user.LastDataApply;
+            DateTime aux =job.Data;
+            foreach (var jobInList in _context.Jobs)
+            {
+                if (aux > jobInList.Data && jobInList.Data > user.LastDataApply)
+                {
+                    aux = jobInList.Data;
+                    jobInList.Data = job.Data;
+                    job.Data = aux;
+                }
+            }
             user.LastDataApply = aux;
-
-            _context.Jobs.Update(job);
-            _context.Users.Update(user);
 
             await _context.SaveChangesAsync();
             Console.WriteLine("A fost salvat ca aplicat.");
         }
-
+        
         public async Task SaveAsNotAppliedAsync(Job jobSent)
         {
+            var user = await GetCurrentUserAsync();
             var job = await _context.Jobs.FindAsync(jobSent.Id);
             if (job == null)
             {
@@ -56,7 +64,7 @@ namespace Job_Finder.Services.AutoApplyService
             job.Data = DateTime.Now;
 
             _context.Jobs.Update(job);
-
+            await _notification.CreeateNotification(user, job);
             await _context.SaveChangesAsync();
             Console.WriteLine("A fost salvat pentru mai târziu.");
         }

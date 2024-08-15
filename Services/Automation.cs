@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace Job_Finder.Services
 {
-    public class Automation 
+    public class Automation
     {
         private readonly AutoApplyBestJobsService _autoApplyBestJobs;
         private readonly AutoApplyEJobs _autoApplyEJobs;
         private readonly AutoApplyLinkedinService _autoApplyLinkedin;
         private readonly AutoApplyIndeed _autoApplyIndeed;
         private readonly WebScrapingService _webScrapingService;
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
         private IWebDriver _driver;
 
         public Automation(WebScrapingService webScrapingService, AutoApplyBestJobsService autoApplyBestJobs,
-            AutoApplyEJobs autoApplyEJobs, AutoApplyLinkedinService autoApplyLinkedin, AutoApplyIndeed autoApplyIndeed, ApplicationDbContext context)
+            AutoApplyEJobs autoApplyEJobs, AutoApplyLinkedinService autoApplyLinkedin, AutoApplyIndeed autoApplyIndeed, AppDbContext context)
         {
             _autoApplyBestJobs = autoApplyBestJobs;
             _webScrapingService = webScrapingService;
@@ -31,7 +31,7 @@ namespace Job_Finder.Services
 
         public async Task JobFinderProces()
         {
-            //await _webScrapingService.SearchJobs();
+            await _webScrapingService.SearchJobs();
             await _autoApplyBestJobs.autoApplyBestjobs();
             await _autoApplyEJobs.ApplyEJobs();
             await _autoApplyLinkedin.ApplyLinkedInJobs();
@@ -54,6 +54,16 @@ namespace Job_Finder.Services
                 }
             }
             //await _autoApplyIndeed.ApplyIndeed();
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

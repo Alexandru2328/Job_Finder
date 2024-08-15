@@ -4,19 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Job_Finder.Models;
 using Job_Finder.Services;
+using OpenQA.Selenium.Support.UI;
+using Microsoft.EntityFrameworkCore;
 
 namespace Job_Finder.Controllers
 {
     [Authorize]
     public class AutoApplyController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly Automation _service;
-
-        public AutoApplyController(UserManager<ApplicationUser> userManager, Automation service)
+        private readonly AppDbContext _context;
+        public AutoApplyController(UserManager<AppUser> userManager, Automation service, AppDbContext context)
         {
             _userManager = userManager;
             _service = service;
+            _context = context;
         }
 
         [HttpGet]
@@ -26,44 +29,25 @@ namespace Job_Finder.Controllers
         }
 
         [HttpPost]
-        public async Task <IActionResult> Edit(AutoApply model)
+        public async Task<IActionResult> Edit(string UserPlatformEmail, string UserPlatformPassword,
+        int DomainExperience, string Message)
         {
-            if (ModelState.IsValid)
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
             {
-                var user = await _userManager.GetUserAsync(User);
-
-                user.UserPlatformEmail = model.UserPlatformEmail;
-                user.UserPlatformPassword = model.UserPlatformPassword;
-                user.DomainExperience = model.DomainExperience;
-                user.Message = model.Message;
-
-                var result = await _userManager.UpdateAsync(user);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("View", "AutoApply");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
+                user.UserPlatformEmail = UserPlatformEmail;
+                user.UserPlatformPassword = UserPlatformPassword;
+                user.DomainExperience = DomainExperience;
+                user.Message = Message;
+            }          
+            await _userManager.UpdateAsync(user);
             return RedirectToAction("View", "AutoApply");
         }
 
         public async Task <IActionResult> View()
         {
             var user = await _userManager.GetUserAsync(User);
-            AutoApply model = new AutoApply();
-            if (user != null)
-            {
-                model.UserPlatformEmail = user.UserPlatformEmail;
-                model.DomainExperience = user.DomainExperience;
-                model.Message = user.Message;
-                model.UserPlatformPassword = user.UserPlatformPassword;
-            }
-            return View(model);
+            return View(user);
         }
         public async Task AutoApplySession()
         {
@@ -72,6 +56,7 @@ namespace Job_Finder.Controllers
 
         public async Task Apply(int id)
         {
+            //await _context.Database.ExecuteSqlRawAsync("DELETE FROM Jobs");
             await _service.JobFinderProces(id);
         }
     }

@@ -15,5 +15,7 @@ namespace Job_Finder.Models
         public string Company { get; set; }
         public DateTime Data { get; set; }
         public string Platform { get; set; }
+        public ICollection<UserNotification> UserNotifications { get; set; }
+
     }
 }

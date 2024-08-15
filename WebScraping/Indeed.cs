@@ -13,16 +13,15 @@ namespace Job_Finder.WebScraping
 {
     public class Indeed
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
         private readonly AutoApplyLinkedinService _autoApplyService;
         private IWebDriver _driver;
-        public Indeed(ApplicationDbContext context, IWebDriver driver)
+        public Indeed(AppDbContext context, IWebDriver driver)
         {
             _context = context;
             _driver = driver;
 
         }
-
         private async Task ScrollIndeed()
         {
             var lastHeight = (long)((IJavaScriptExecutor)_driver).ExecuteScript("return document.body.scrollHeight");
@@ -56,7 +55,6 @@ namespace Job_Finder.WebScraping
             try
             {
                 var node = _driver.FindElements(By.ClassName("job_seen_beacon"));
-
                 foreach (var li in node)
                 {
                     if (li != null)
@@ -76,20 +74,19 @@ namespace Job_Finder.WebScraping
                             Title = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", titleElement),
                             Company = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", companyEl),
                             Details = (string)((IJavaScriptExecutor)_driver).ExecuteScript("return arguments[0].outerHTML;", detailsEl),
-                            Platform = "Indeed"
-
+                            Platform = "Indeed",
+                            Data = DateTime.Now,
                         };
-
                         bool jobExists = await _context.Jobs.AnyAsync(j => j.Id_Traking == trackingId);
                         if (!jobExists)
                         {
+                            await Task.Delay(1000);
                             job.Data = DateTime.Now;
                             _context.Jobs.Add(job);
                             await _context.SaveChangesAsync();
                         }
                     }
                 }
-
             }
             catch (Exception ex) { }
         }

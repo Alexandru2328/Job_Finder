@@ -13,23 +13,21 @@ namespace Job_Finder.WebScraping
 {
     public class EJobs
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
         private readonly AutoApplyLinkedinService _autoApplyService;
         private IWebDriver _driver;
-        public EJobs(ApplicationDbContext context, IWebDriver driver)
+        public EJobs(AppDbContext context, IWebDriver driver)
         {
             _context = context;
             _driver = driver;
            
         }
-
         private async Task scrollEJobs()
         {
             var lastHeight = (long)((IJavaScriptExecutor)_driver).ExecuteScript("return document.body.scrollHeight");
             int nrOfEqual = 0;
             while (true)
             {
-
                 IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
                 js.ExecuteScript("window.scrollBy(0,850)", "");
                 await Task.Delay(300);
@@ -51,6 +49,22 @@ namespace Job_Finder.WebScraping
                 lastHeight = newHeight;
             }
         }
+        private async Task<bool> CheckAds(string title)
+        {
+            List<string> keyWords = new List<string>() {
+                "developer", "programator", "web","software", "frontend",
+                "software","engineer", ".net", "c#", "javascript", "it", "junior"
+            };
+            string thisTitle = title.ToLower();
+            foreach (string word in keyWords)
+            {
+                if (thisTitle.Contains(word))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         private async Task saveAdsEJobs()
         {
             try
@@ -70,15 +84,17 @@ namespace Job_Finder.WebScraping
                         Details = detailsElement.Text,
                         Link = link,
                         Id_Traking = link,
-                        Platform = "Ejobs"
+                        Platform = "Ejobs",
+                        Data = DateTime.Now,
                     };
                     bool jobExists = await _context.Jobs.AnyAsync(j => j.Id_Traking == link);
-                    if (!jobExists)
+                    bool isSuitable = await CheckAds(job.Title);
+                    if (!jobExists && isSuitable)
                     {
+                        await Task.Delay(1000);
                         job.Data = DateTime.Now;
                         _context.Jobs.Add(job);
                         await _context.SaveChangesAsync();
-
                     }
                 }
 
@@ -88,7 +104,6 @@ namespace Job_Finder.WebScraping
         public async Task searchEJobs(string search)
         {
             string url = "https://www.ejobs.ro/locuri-de-munca/" + search;
-
             _driver.Navigate().GoToUrl(url);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1000);
             await Task.Delay(500);
@@ -113,7 +128,7 @@ namespace Job_Finder.WebScraping
                 catch (NoSuchElementException ex)
                 {
                     break;
-                }
+                } catch (Exception ex) { }
                 await Task.Delay(500);
             }
 

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Job_Finder.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class AppUser : IdentityUser
     {
         public string FirstName { get; set; } = String.Empty;
         public string LastName { get; set; } = String.Empty;
@@ -18,5 +18,7 @@ namespace Job_Finder.Models
         public string UserPlatformPassword { get; set; } = string.Empty;
         public int DomainExperience { get; set; } = 0;
         public string Message { get; set; } = string.Empty;
+        public ICollection<UserNotification> UserNotifications { get; set; }
+
     }
 }

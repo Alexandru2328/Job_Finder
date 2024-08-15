@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Job_Finder.Services
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options)
+        public AppDbContext(DbContextOptions options) : base(options)
         {
             
         }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<UserCookie> UserCookies { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -24,9 +25,13 @@ namespace Job_Finder.Services
             admin.NormalizedName = "client";
             builder.Entity<IdentityRole>().HasData(admin, client);
 
+            builder.Entity<UserNotification>()
+                .HasOne(un => un.User).WithMany(u => u.UserNotifications)
+                .HasForeignKey(un => un.UserId);
+
+            builder.Entity<UserNotification>()
+                .HasOne(un => un.Job).WithMany(j => j.UserNotifications)
+                .HasForeignKey(un => un.JobId);
         }
-        public DbSet<AutoApply> AutoApply { get; set; } = default!;
-       
-        
     }
 }

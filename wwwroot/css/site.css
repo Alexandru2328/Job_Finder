@@ -23,7 +23,7 @@ body {
 }
 
 .notification {
-    background-color: aliceblue;
+    background-color: deeppink;
     color: black;
     text-decoration: none;
     padding: 10px 15px;
@@ -33,7 +33,7 @@ body {
 }
 
     .notification:hover {
-        background: blue;
+        background: deeppink;
     }
 
     .notification .badge {

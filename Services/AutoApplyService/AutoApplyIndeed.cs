@@ -18,13 +18,13 @@ namespace Job_Finder.Services.AutoApplyService
 {
     public class AutoApplyIndeed
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebDriver _driver;
         private readonly SaveJobs _saveJobs;
 
-        public AutoApplyIndeed(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+        public AutoApplyIndeed(AppDbContext context, UserManager<AppUser> userManager,
             IHttpContextAccessor httpContextAccessor, SaveJobs saveJobs)
         {
             _context = context;
@@ -33,7 +33,7 @@ namespace Job_Finder.Services.AutoApplyService
             _saveJobs = saveJobs;
         }
 
-        public async Task<ApplicationUser> GetCurrentUserAsync()
+        public async Task<AppUser> GetCurrentUserAsync()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _userManager.FindByIdAsync(userId);
@@ -43,7 +43,14 @@ namespace Job_Finder.Services.AutoApplyService
         {
 
             var options = new ChromeOptions();
-            options.AddArgument("--start-maximized");
+            options.AddArgument("--headless");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--disable-blink-features=AutomationControlled");
+            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
+            //options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://secure.indeed.com/auth?hl=en_US&service=my&co=US&continue=https%3A%2F%2Fwww.indeed.com%2F");
