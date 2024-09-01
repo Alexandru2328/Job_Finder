@@ -7,6 +7,6 @@ Start-Sleep -Seconds 15
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("{F5}")
 
-Start-Sleep -Seconds 400
+Start-Sleep -Seconds 800
 
 Stop-Process -Id $visualStudioProcess.Id

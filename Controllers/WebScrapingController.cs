@@ -34,7 +34,8 @@ namespace WebAppScraping.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                var jobList = await _context.Jobs.ToListAsync();
+                var jobList = await _context.Jobs.OrderByDescending(j => j.Data)
+                    .ToListAsync();
                 ViewBag.LastDataApplied = user.LastDataApply;
                 ViewBag.Count = jobList.Count;
                 return View(jobList);

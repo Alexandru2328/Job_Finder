@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Job_Finder.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240810192913_testtare")]
-    partial class testtare
+    [Migration("20240816132847_restartDb")]
+    partial class restartDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,6 +111,9 @@ namespace Job_Finder.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int?>("UserNotificationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserPlatformEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -131,6 +134,8 @@ namespace Job_Finder.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("UserNotificationId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -259,16 +264,11 @@ namespace Job_Finder.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("UserNotificationId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("JobId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserNotificationId");
 
                     b.ToTable("UserNotifications");
                 });
@@ -302,13 +302,13 @@ namespace Job_Finder.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8c42d74d-ede7-4e5e-8535-687c8b190919",
+                            Id = "5960d646-1bd8-443d-b02b-cbbc4f15abdc",
                             Name = "admin",
                             NormalizedName = "client"
                         },
                         new
                         {
-                            Id = "91923ff6-9bc4-4a65-8e99-d11e87319c1b",
+                            Id = "da2f599d-c35b-4dac-87c5-1eb3741aff9e",
                             Name = "client"
                         });
                 });
@@ -423,10 +423,17 @@ namespace Job_Finder.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Job_Finder.Models.AppUser", b =>
+                {
+                    b.HasOne("Job_Finder.Models.UserNotification", null)
+                        .WithMany("UserNotificationId")
+                        .HasForeignKey("UserNotificationId");
+                });
+
             modelBuilder.Entity("Job_Finder.Models.Job", b =>
                 {
                     b.HasOne("Job_Finder.Models.UserNotification", null)
-                        .WithMany("jobs")
+                        .WithMany("Jobs")
                         .HasForeignKey("UserNotificationId");
                 });
 
@@ -443,10 +450,6 @@ namespace Job_Finder.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Job_Finder.Models.UserNotification", null)
-                        .WithMany("UserNotifications")
-                        .HasForeignKey("UserNotificationId");
 
                     b.Navigation("Job");
 
@@ -516,9 +519,9 @@ namespace Job_Finder.Migrations
 
             modelBuilder.Entity("Job_Finder.Models.UserNotification", b =>
                 {
-                    b.Navigation("UserNotifications");
+                    b.Navigation("Jobs");
 
-                    b.Navigation("jobs");
+                    b.Navigation("UserNotificationId");
                 });
 #pragma warning restore 612, 618
         }

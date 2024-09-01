@@ -50,7 +50,7 @@ namespace Job_Finder.Services.AutoApplyService
             options.AddArgument("--disable-gpu");
             options.AddArgument("--disable-blink-features=AutomationControlled");
             options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            //options.AddArgument("--start-maximized");
+            options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://secure.indeed.com/auth?hl=en_US&service=my&co=US&continue=https%3A%2F%2Fwww.indeed.com%2F");

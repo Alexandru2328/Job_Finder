@@ -42,6 +42,7 @@ namespace Job_Finder.Services.AutoApplyService
         }
         public async Task ApplyLinkedInJobs(int id)
         {
+            var user = await GetCurrentUserAsync();
             var options = new ChromeOptions();
             options.AddArgument("--headless");
             options.AddArgument("--window-size=1920,1080");
@@ -50,7 +51,7 @@ namespace Job_Finder.Services.AutoApplyService
             options.AddArgument("--disable-gpu");
             options.AddArgument("--disable-blink-features=AutomationControlled");
             options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            //options.AddArgument("--start-maximized");
+            options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.linkedin.com/home");
@@ -58,9 +59,13 @@ namespace Job_Finder.Services.AutoApplyService
             await LoadCookies();
             await Task.Delay(1000);
             bool isLogin = await IsUserLoggedOnLinkedIn();
-            if (!isLogin)
+            if (!isLogin && user.AutoAplly)
             {
                 await AuthenticateLinkedIn();
+            } else
+            {
+                await SaveUserCookei();
+                await LoadCookies();
             }
             await Task.Delay(9000);
             var job = await _context.Jobs.FindAsync(id);
@@ -76,28 +81,42 @@ namespace Job_Finder.Services.AutoApplyService
             {
                 await _saveJobs.SaveAsNotAppliedAsync(job);
             }
-           await SaveCookies();
+            //await SaveCookies();
         }
 
-            public async Task ApplyLinkedInJobs()
+        public async Task ApplyLinkedInJobs()
         {
+            var user = await GetCurrentUserAsync();
             var options = new ChromeOptions();
+            options.AddArgument("--headless");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--disable-blink-features=AutomationControlled");
+            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
             options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.linkedin.com/home");
-
-            await LoadCookies();
             await Task.Delay(1000);
+            await LoadCookies();
+            await Task.Delay(2000);
             bool isLogin = await IsUserLoggedOnLinkedIn();
-            if (!isLogin)
+            if (!isLogin && user.AutoAplly)
             {
                 await AuthenticateLinkedIn();
             }
+            else if (! isLogin)
+            {
+                //await DeleteCookei();
+                await SaveUserCookei();
+                await LoadCookies();
+            }
             await Task.Delay(2000);
-            var user = await GetCurrentUserAsync();
             var jobList = await _context.Jobs.ToListAsync();
-            var filteredJobs = jobList.Where(j => j.Platform == "Linkedin");
+            var filteredJobs = await _context.Jobs.OrderByDescending(j => j.Data)
+                    .ToListAsync();
             foreach (var job in filteredJobs)
             {
                 if (job.Data > user.LastDataApply)
@@ -116,73 +135,106 @@ namespace Job_Finder.Services.AutoApplyService
                 }
             }
 
-            await SaveCookies();
+            ////await SaveCookies();
         }
 
         private async Task AutoCompletationLinkedin()
         {
             var user = await GetCurrentUserAsync();
-            // <= insert text to input element =>
-            var input = _driver.FindElements(By.TagName("input"));
-            foreach (var inp in input)
-            {
-                string getInputText = inp.GetAttribute("value");
-                if (getInputText.IsNullOrEmpty())
+             //<= insert text to input element =>
+                var input = _driver.FindElements(By.TagName("input"));
+                foreach (var inp in input)
                 {
-                    inp.SendKeys(user.DomainExperience.ToString());
-                }
-            }
-            await Task.Delay(1500);
-            // <= insert text to textarea element =>
-            var textareaElement = _driver.FindElements(By.TagName("textarea"));
-            foreach (var textarea in textareaElement)
-            {
-                string textareaText = textarea.GetAttribute("value");
-                if (textareaText.IsNullOrEmpty())
-                {
-                    textarea.SendKeys(user.Message);
-                }
-            }
-            // <=  pres ckeck box =>
-            var radioButtons = _driver.FindElements(By.CssSelector("label[data-test-text-selectable-option__label='Yes']"));
-            foreach (var radioButton in radioButtons)
-            {
-                await Task.Delay(1500);
-                radioButton.Click();
-            }
-            // <= select option for select =>
-            List<string> keywords = new List<string> { "romania", "yes", "da", "male", "intermediate", "yes, i am a citizen.", "LinkedIn" };
-
-            var selectElements = _driver.FindElements(By.TagName("select"));
-            foreach (var select in selectElements)
-            {
-                var selectElement = new SelectElement(select);
-
-                bool optionFound = false;
-                foreach (var option in selectElement.Options)
-                {
-                    foreach (var keyword in keywords)
+                    try
                     {
-                        if (option.Text.ToLower() == keyword || option.GetAttribute("value").ToLower() == keyword)
+                        string getInputText = inp.GetAttribute("value");
+                        if (getInputText.IsNullOrEmpty())
                         {
-                            option.Click();
-                            optionFound = true;
+                            inp.SendKeys(user.DomainExperience.ToString());
+                        }
+
+                    } catch (WebDriverArgumentException ex){ }
+                }
+                await Task.Delay(500);
+             try 
+            {
+            
+            } catch (NoSuchElementException ex) {}
+            // <= insert text to textarea element =>
+            try
+            {
+                var textareaElement = _driver.FindElements(By.TagName("textarea"));
+                foreach (var textarea in textareaElement)
+                {
+                    string textareaText = textarea.GetAttribute("value");
+                    if (textareaText.IsNullOrEmpty())
+                    {
+                        textarea.SendKeys(user.Message);
+                    }
+                }
+            } catch (NoSuchElementException ex) { }
+            // <=  pres ckeck box =>
+            try
+            {
+                var radioButtons = _driver.FindElements(By.CssSelector("label[data-test-text-selectable-option__label='Yes']"));
+                foreach (var radioButton in radioButtons)
+                {
+                    await Task.Delay(1500);
+                    radioButton.Click();
+                }
+            } catch (NoSuchElementException ex) { }
+            // <= select option for select =>
+            try
+            {
+                List<string> keywords = new List<string> { "romania", "yes", "da", "male", "intermediate", "yes, i am a citizen.", "LinkedIn" };
+
+                var selectElements = _driver.FindElements(By.TagName("select"));
+                foreach (var select in selectElements)
+                {
+                    var selectElement = new SelectElement(select);
+
+                    bool optionFound = false;
+                    foreach (var option in selectElement.Options)
+                    {
+                        foreach (var keyword in keywords)
+                        {
+                            if (option.Text.ToLower() == keyword || option.GetAttribute("value").ToLower() == keyword)
+                            {
+                                option.Click();
+                                optionFound = true;
+                                break;
+                            }
+                        }
+                        if (optionFound)
+                        {
                             break;
                         }
                     }
-                    if (optionFound)
-                    {
-                        break;
-                    }
                 }
-            }
+
+            } catch (NoSuchElementException ex) { }
             // <= I Agree Terms & Conditions =>
+            int nrOfTims = 0;
             try
             {
+           
                 var label = _driver.FindElement(By.CssSelector("label[data-test-text-selectable-option__label]"));
                 label.Click();
+                var erorrMessge = _driver.FindElement(By.ClassName("artdeco-inline-feedback__message"));
+                while (erorrMessge.Displayed)
+                {
+                    Console.WriteLine("need to be select I Agree Terms & Conditions ");
+                    await Task.Delay(2000);
+                    label.Click();
+                    ++nrOfTims;
+                    if(nrOfTims == 10)
+                    {
+                        break ;
+                    }
+                }
 
-            } catch (Exception ex){ }
+            }
+            catch (NoSuchElementException ex){ }
             await Task.Delay(1000);
             try
             {
@@ -196,9 +248,13 @@ namespace Job_Finder.Services.AutoApplyService
             try
             {
                 var loginButton = _driver.FindElement(By.ClassName("nav__button-secondary"));
-                return false;
+                if (loginButton != null || loginButton.Displayed)
+                {
+                    return false;
+                }
+                return true;
             }
-            catch (NoSuchElementException)
+            catch (Exception EX)
             {
                 return true;
             }
@@ -255,44 +311,45 @@ namespace Job_Finder.Services.AutoApplyService
         {
             await Task.Delay(2500);
             var applyBtn = _driver.FindElements(By.CssSelector(".jobs-apply-button.artdeco-button.artdeco-button--3.artdeco-button--primary.ember-view"));
-            int initialWindowCount = _driver.WindowHandles.Count;
+            //int initialWindowCount = _driver.WindowHandles.Count;
             int isNotFinde = 0;
+            try
+            {
+                var notAccepted = _driver.FindElement(By.ClassName("artdeco-inline-feedback__icon"));
+                if (notAccepted.Displayed) 
+                {
+                    Console.WriteLine("Not accepted");
+                    return true;
+                }
+
+            } catch (Exception ex) { }
             // <= Pres Apply button =>
             foreach (var ele in applyBtn)
             {
+
                 try
                 {
+                    var role = ele.GetAttribute("role");
                     await Task.Delay(1500);
-                    ele.Click();
-                    ++isNotFinde;
+                    if (role == "link")
+                    {
+                        Console.WriteLine("Nu este potrivit");
+                       return false;
+                    } else
+                    {
+                        ele.Click();
+                        ++isNotFinde;
+                    }
                 }
                 catch (NoSuchElementException ex)
                 {
                 }
                 catch (ElementNotInteractableException et) { }
             }
-            Console.WriteLine(isNotFinde);
-            // <= Check if open a new tab =>
-            int newWindowCount = _driver.WindowHandles.Count;
-            if (newWindowCount > initialWindowCount)
+            Console.WriteLine(isNotFinde);         
+            if (isNotFinde == 0)
             {
-                Console.WriteLine("Sa deschis un now tab");
-                // Închide toate ferestrele/tab-urile deschise după inițial
-
-                for (int i = initialWindowCount; i < newWindowCount; i++)
-                {
-                    string newWindowHandle = _driver.WindowHandles[i];
-                    _driver.SwitchTo().Window(newWindowHandle);
-                    _driver.Close();
-                }
-
-                // Revino la tab-ul inițial
-                _driver.SwitchTo().Window(_driver.WindowHandles[0]);
-                return false;
-            }
-            else if (isNotFinde == 0)
-            {
-
+                Console.WriteLine("nu se gaseste butonul");
                 return true;
             }
 
@@ -304,8 +361,10 @@ namespace Job_Finder.Services.AutoApplyService
 
             await Task.Delay(1500);
             // <= Pres next btn until is not available =>
+            int nrTimse = 0;
             while (true)
             {
+                
                 IWebElement nextStep = null;
                 foreach (var ele in name)
                 {
@@ -317,7 +376,7 @@ namespace Job_Finder.Services.AutoApplyService
                         var needToByCompleteds = _driver.FindElement(By.ClassName("artdeco-inline-feedback__message"));
                         if (needToByCompleteds.Displayed)
                         {
-                            Console.WriteLine("trebuie completat");
+                            Console.WriteLine("trebuie completat inainte");
                             await AutoCompletationLinkedin();
                             await Task.Delay(1500);
                         }
@@ -328,39 +387,51 @@ namespace Job_Finder.Services.AutoApplyService
                 {
                     break;
                 }
+                ++nrTimse;
+                if (nrTimse == 30)
+                {
+                    return false;
+                }
             }
 
             await Task.Delay(1500);
             // <= press review btn =>
             List<string> nameReview = new List<string>()
             {
-                //"Review your application",
+                "Review your application",
                 "Examinați candidatura dvs."
             };
-            bool isReview = false;
 
             foreach (var ele in nameReview)
             {
-                   
+                int nrTimes = 0; 
                 try
                 {
                     var nextStep = _driver.FindElement(By.XPath("//*[@aria-label='" + ele + "']"));
                     nextStep.Click();
+
+               
                     await Task.Delay(2000);
-                    var needToByCompleted = _driver.FindElement(By.ClassName("artdeco-inline-feedback__message"));
-                    while (needToByCompleted.Displayed)
+
+                    try
                     {
-                        nextStep.Click();
-                        Console.WriteLine("trebuie completat");
-                        await AutoCompletationLinkedin();
-                        nextStep.Click();
-                    }
-                    while (nextStep == null) 
-                    {
-                         nextStep.Click();
-                    }
-                }
-                catch (Exception ex) { }
+                        while (nextStep != null)
+                        {
+                            nextStep.Click();
+                            Console.WriteLine("trebuie completat aici");
+                            await AutoCompletationLinkedin();
+                            nextStep.Click();
+                            ++nrTimes;
+                            if (nrTimes == 26)
+                            {
+                                return false;
+                            }
+                            await Task.Delay(1000);
+                        }
+
+                    } catch (StaleElementReferenceException ex) { }
+
+                } catch (NoSuchElementException ex) { }
             }
 
             List<string> sendName = new List<string>()
@@ -396,8 +467,22 @@ namespace Job_Finder.Services.AutoApplyService
             }
             return false;
         }
+        public async Task SaveUserCookei()
+        {
+            IWebDriver loginDriver = new ChromeDriver();
+            loginDriver.Navigate().GoToUrl("https://www.linkedin.com/home");
+            await Task.Delay(20000);
+            Console.WriteLine("1");
+            await Task.Delay(20000);
+            Console.WriteLine("2");
+            await Task.Delay(20000);
+            Console.WriteLine("3");
 
-        public async Task SaveCookies()
+            await SaveCookies(loginDriver);
+            loginDriver.Close();
+        }
+
+        public async Task DeleteCookei()
         {
             var currentUser = await GetCurrentUserAsync();
             if (currentUser == null)
@@ -405,7 +490,26 @@ namespace Job_Finder.Services.AutoApplyService
                 throw new InvalidOperationException("User is not logged in.");
             }
 
-            var cookies = _driver.Manage().Cookies.AllCookies;
+            var cookies = await _context.UserCookies.Where(c => c.UserName == currentUser.UserName).ToListAsync();
+            foreach (var userCookie in cookies)
+            {
+                if (userCookie.Platform == "Linkedin")
+                {
+                   _context.UserCookies.Remove(userCookie);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
+        public async Task SaveCookies(IWebDriver diever)
+        {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                throw new InvalidOperationException("User is not logged in.");
+            }
+
+            var cookies = diever.Manage().Cookies.AllCookies;
             foreach (var cookie in cookies)
             {
                 var userCookie = new UserCookie
@@ -439,9 +543,14 @@ namespace Job_Finder.Services.AutoApplyService
             {
                 if (userCookie.Platform == "Linkedin")
                 {
-                    var cookie = new Cookie(userCookie.Name, userCookie.Value, userCookie.Domain, userCookie.Path,
-                        userCookie.Expiry, userCookie.Secure, userCookie.HttpOnly, userCookie.SameSite);
-                    _driver.Manage().Cookies.AddCookie(cookie);
+                                     
+                    try
+                    {
+                        var cookie = new Cookie(userCookie.Name, userCookie.Value, userCookie.Domain, userCookie.Path,
+                            userCookie.Expiry, userCookie.Secure, userCookie.HttpOnly, userCookie.SameSite);
+                        _driver.Manage().Cookies.AddCookie(cookie);
+                    }
+                    catch (Exception) { }
 
                 }
             }

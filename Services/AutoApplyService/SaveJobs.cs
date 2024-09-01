@@ -28,28 +28,32 @@ namespace Job_Finder.Services.AutoApplyService
 
         public async Task SaveAsAppliedAsync(Job jobSent)
         {
-            var user = await GetCurrentUserAsync();
-
-            var job = await _context.Jobs.FindAsync(jobSent.Id);
-            if (job == null)
+            try
             {
-                return;
-            }
+                var job = await _context.Jobs.FindAsync(jobSent.Id);
+                var user = await GetCurrentUserAsync();
 
-            DateTime aux =job.Data;
-            foreach (var jobInList in _context.Jobs)
-            {
-                if (aux > jobInList.Data && jobInList.Data > user.LastDataApply)
+                if (job == null)
                 {
-                    aux = jobInList.Data;
-                    jobInList.Data = job.Data;
-                    job.Data = aux;
+                    return;
                 }
-            }
-            user.LastDataApply = aux;
 
-            await _context.SaveChangesAsync();
-            Console.WriteLine("A fost salvat ca aplicat.");
+                DateTime aux =job.Data;
+                foreach (var jobInList in _context.Jobs)
+                {
+                    if (aux > jobInList.Data && jobInList.Data > user.LastDataApply)
+                    {
+                        aux = jobInList.Data;
+                        jobInList.Data = job.Data;
+                        job.Data = aux;
+                    }
+                }
+                user.LastDataApply = aux;
+
+                await _context.SaveChangesAsync();
+                Console.WriteLine("A fost salvat ca aplicat.");
+
+            } catch (Exception ex) { }
         }
         
         public async Task SaveAsNotAppliedAsync(Job jobSent)
@@ -64,7 +68,7 @@ namespace Job_Finder.Services.AutoApplyService
             job.Data = DateTime.Now;
 
             _context.Jobs.Update(job);
-            await _notification.CreeateNotification(user, job);
+            await _notification.CreateNotification(user, job);
             await _context.SaveChangesAsync();
             Console.WriteLine("A fost salvat pentru mai târziu.");
         }

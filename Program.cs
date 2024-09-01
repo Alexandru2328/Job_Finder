@@ -23,6 +23,7 @@ builder.Services.AddTransient<WebScrapingService>();
 builder.Services.AddTransient<Automation>();
 builder.Services.AddTransient<SaveJobs>();
 builder.Services.AddTransient<NotificationServices>();
+builder.Services.AddSingleton<AutomationProgress>();
 
 var app = builder.Build();
 

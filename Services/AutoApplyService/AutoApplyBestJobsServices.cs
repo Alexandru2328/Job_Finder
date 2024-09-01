@@ -45,7 +45,7 @@ namespace Job_Finder.Services.AutoApplyService
             options.AddArgument("--disable-gpu");
             options.AddArgument("--disable-blink-features=AutomationControlled");
             options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            //options.AddArgument("--start-maximized");
+            options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.bestjobs.eu/ro/login");
@@ -86,7 +86,7 @@ namespace Job_Finder.Services.AutoApplyService
             options.AddArgument("--disable-gpu");
             options.AddArgument("--disable-blink-features=AutomationControlled");
             options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            //options.AddArgument("--start-maximized");
+            options.AddArgument("--start-maximized");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.bestjobs.eu/ro/login");
@@ -181,7 +181,6 @@ namespace Job_Finder.Services.AutoApplyService
                 }
             }
             catch (Exception) { }
-
             try
             {
                 var passwordInput = _driver.FindElement(By.Id("login_form__password"));
@@ -192,7 +191,6 @@ namespace Job_Finder.Services.AutoApplyService
             }
             catch (Exception) { }
             await Task.Delay(1000);
-
             try
             {
                 var login = _driver.FindElement(By.ClassName("btn-success"));

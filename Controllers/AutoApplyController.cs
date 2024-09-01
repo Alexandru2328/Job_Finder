@@ -6,7 +6,6 @@ using Job_Finder.Models;
 using Job_Finder.Services;
 using OpenQA.Selenium.Support.UI;
 using Microsoft.EntityFrameworkCore;
-
 namespace Job_Finder.Controllers
 {
     [Authorize]
@@ -15,11 +14,14 @@ namespace Job_Finder.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly Automation _service;
         private readonly AppDbContext _context;
-        public AutoApplyController(UserManager<AppUser> userManager, Automation service, AppDbContext context)
+        private readonly AutomationProgress _progress;
+        private int Percentage { get; set; } = 0;
+        public AutoApplyController(UserManager<AppUser> userManager, Automation service, AppDbContext context, AutomationProgress progress)
         {
             _userManager = userManager;
             _service = service;
             _context = context;
+            _progress = progress;
         }
 
         [HttpGet]
@@ -51,13 +53,19 @@ namespace Job_Finder.Controllers
         }
         public async Task AutoApplySession()
         {
-            await _service.JobFinderProces();
+            await _service.JobFinderProcess();
         }
 
-        public async Task Apply(int id)
+        public async Task<IActionResult>Apply(int id)
         {
-            //await _context.Database.ExecuteSqlRawAsync("DELETE FROM Jobs");
             await _service.JobFinderProces(id);
+            return RedirectToAction("View", "AutoApply");
+        }
+        public async Task<IActionResult> GetPercentage()
+        {
+            Percentage = await _progress.GetProgress();
+            Console.WriteLine(Percentage);
+            return Json(new { count = Percentage });
         }
     }
 }

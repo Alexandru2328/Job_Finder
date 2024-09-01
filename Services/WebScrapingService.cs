@@ -25,16 +25,26 @@ namespace Job_Finder.Services
         {
             _context = context;
             _autoApplyService = autoApplyService;
-            
+            _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
+
         }
 
         public async Task<AppUser> GetCurrentUserAsync()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
             return await _userManager.FindByIdAsync(userId);
         }
         public async Task SearchJobs()
         {
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                user.LastDataSearch = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            await Task.Delay(1000);
             var options = new ChromeOptions();
             options.AddArgument("--headless");
             options.AddArgument("--window-size=1920,1080");
@@ -43,8 +53,7 @@ namespace Job_Finder.Services
             options.AddArgument("--disable-gpu");
             options.AddArgument("--disable-blink-features=AutomationControlled");
             options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            var user = await GetCurrentUserAsync();
-            user.LastDataSearch = DateTime.Now;
+
 
             _driver = new ChromeDriver(options);
             Linkedin linkedin = new Linkedin(_context, _driver);

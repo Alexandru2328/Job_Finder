@@ -22,6 +22,9 @@
                         <p class="card-text">Can you please take a look ?</p>
                         <a class="btn btn-primary" href="@not.Link">Link</a>
                         <h2><a class="btn btn-primary" asp-action="SetAsSaved" asp-route-id="@not.Id">Save as applied!</a></h2>
+                        <a asp-controller="AutoApply" asp-action="Apply" asp-route-id="@not.JobId" class="btn btn-success">Try Apply</a>
+                        <h2><a class="btn btn-primary" asp-action="Delete" asp-route-id="@not.Id">Delete</a></h2>
+
                     </div>
                 </div>
               <br />

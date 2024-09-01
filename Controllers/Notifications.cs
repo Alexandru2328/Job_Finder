@@ -57,6 +57,13 @@ namespace Job_Finder.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Apply");
         }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var notification = await _context.UserNotifications.FindAsync(id);
+            _context.UserNotifications.Remove(notification);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Apply");
+        }
         public async Task<IActionResult>Notification()
         {
             var user = await _userManager.GetUserAsync(User);

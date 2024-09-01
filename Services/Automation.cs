@@ -1,5 +1,6 @@
 ﻿using Job_Finder.Models;
 using Job_Finder.Services.AutoApplyService;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using OpenQA.Selenium;
@@ -16,27 +17,45 @@ namespace Job_Finder.Services
         private readonly AutoApplyIndeed _autoApplyIndeed;
         private readonly WebScrapingService _webScrapingService;
         private readonly AppDbContext _context;
+        private readonly AutomationProgress _progress;
         private IWebDriver _driver;
+        private int Percentage { get; set; }
+
 
         public Automation(WebScrapingService webScrapingService, AutoApplyBestJobsService autoApplyBestJobs,
-            AutoApplyEJobs autoApplyEJobs, AutoApplyLinkedinService autoApplyLinkedin, AutoApplyIndeed autoApplyIndeed, AppDbContext context)
+            AutoApplyEJobs autoApplyEJobs, AutoApplyLinkedinService autoApplyLinkedin, AutoApplyIndeed autoApplyIndeed,
+            AppDbContext context, AutomationProgress progress )
         {
             _autoApplyBestJobs = autoApplyBestJobs;
             _webScrapingService = webScrapingService;
             _autoApplyEJobs = autoApplyEJobs;
             _autoApplyLinkedin = autoApplyLinkedin;
             _autoApplyIndeed = autoApplyIndeed;
-            _context = context;
+            _context = context; 
+            _progress = progress;
         }
 
-        public async Task JobFinderProces()
+        public async Task JobFinderProcess()
         {
+  
+            await _progress.SetProgress(10);
             await _webScrapingService.SearchJobs();
-            await _autoApplyBestJobs.autoApplyBestjobs();
+
+            await _progress.SetProgress(20);
+            _autoApplyBestJobs.autoApplyBestjobs();
+
+            await _progress.SetProgress(40);
             await _autoApplyEJobs.ApplyEJobs();
+
+            await _progress.SetProgress(60);
             await _autoApplyLinkedin.ApplyLinkedInJobs();
+
+            await _progress.SetProgress(80);
             //await _autoApplyIndeed.ApplyIndeed();
+            await Task.Delay(2000);
+            await _progress.SetProgress(100);
         }
+      
         public async Task JobFinderProces(int id)
         {
             var job = await _context.Jobs.FindAsync(id);
@@ -55,15 +74,6 @@ namespace Job_Finder.Services
             }
             //await _autoApplyIndeed.ApplyIndeed();
         }
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }

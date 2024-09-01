@@ -13,7 +13,7 @@ namespace Job_Finder.Services
             _context = context;
             _userManager = userManager;
         }
-        private async Task<bool> checkIfExists(AppUser user, Job job)
+        private async Task<bool> IsSavedInDb(AppUser user, Job job)
         {
             var list = await _context.UserNotifications.Where(n => n.UserId == user.Id).
                 ToListAsync();
@@ -26,7 +26,7 @@ namespace Job_Finder.Services
             }
             return false;
         }
-        public async Task CreeateNotification(AppUser user, Job job)
+        public async Task CreateNotification(AppUser user, Job job)
         {
             var notification = new UserNotification
             {
@@ -37,7 +37,7 @@ namespace Job_Finder.Services
                 Link = job.Link,
                 Title = job.Title,
             };
-            bool exists = await checkIfExists(user, job);
+            bool exists = await IsSavedInDb(user, job);
             if (!exists)
             {
                 _context.UserNotifications.Add(notification);

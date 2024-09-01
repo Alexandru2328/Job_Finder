@@ -15,8 +15,6 @@
 
 
         <h3>Auto Apply Manager</h3>
-
-
         <div class="row">
             <div class="col-md-6">
                 <form id="profile-form" method="post" novalidate="novalidate">
@@ -51,6 +49,22 @@
     </div>
 </div>
 <br />
-<div>
-    <a asp-controller="AutoApply" asp-action="AutoApplySession" class="btn btn-success">Start a new Auto Apply Session</a>
+<div class="col-md-6">
+    <div id="button">
+        <a asp-controller="AutoApply" asp-action="AutoApplySession" onclick="ShowProgressBar()" id="startButton" class="btn btn-success">Start a new Auto Apply Session</a>
+    </div>
+    <br />
+    <div class="form-floating mb-3" id="progress" style="display: none;">
+        <div>
+            <div>
+                <p id="text">Search Process 🔍 </p>
+            </div>
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+        <div class="progress">
+            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 1%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100">1%</div>
+        </div>
+    </div>
 </div>
