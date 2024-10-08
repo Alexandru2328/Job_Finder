@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Job_Finder.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240816132847_restartDb")]
-    partial class restartDb
+    [Migration("20241005182316_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -79,6 +79,10 @@ namespace Job_Finder.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("MailCompani")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -302,13 +306,13 @@ namespace Job_Finder.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5960d646-1bd8-443d-b02b-cbbc4f15abdc",
+                            Id = "179fa479-46b2-4691-ba1b-dd570848764d",
                             Name = "admin",
                             NormalizedName = "client"
                         },
                         new
                         {
-                            Id = "da2f599d-c35b-4dac-87c5-1eb3741aff9e",
+                            Id = "b934d9be-de40-4748-8e05-0cc397565569",
                             Name = "client"
                         });
                 });

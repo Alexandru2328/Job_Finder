@@ -44,8 +44,7 @@ namespace Job_Finder.Services.AutoApplyService
 
             var options = new ChromeOptions();
             options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
-            options.AddArgument("--disable-dev-shm-usage");
+             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-gpu");
             options.AddArgument("--disable-blink-features=AutomationControlled");

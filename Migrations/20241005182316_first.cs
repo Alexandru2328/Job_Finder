@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Job_Finder.Migrations
 {
     /// <inheritdoc />
-    public partial class restartDb : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -135,6 +135,7 @@ namespace Job_Finder.Migrations
                     UserPlatformPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DomainExperience = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MailCompani = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserNotificationId = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -231,8 +232,8 @@ namespace Job_Finder.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "5960d646-1bd8-443d-b02b-cbbc4f15abdc", null, "admin", "client" },
-                    { "da2f599d-c35b-4dac-87c5-1eb3741aff9e", null, "client", null }
+                    { "179fa479-46b2-4691-ba1b-dd570848764d", null, "admin", "client" },
+                    { "b934d9be-de40-4748-8e05-0cc397565569", null, "client", null }
                 });
 
             migrationBuilder.CreateIndex(

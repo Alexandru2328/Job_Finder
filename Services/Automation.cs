@@ -37,23 +37,40 @@ namespace Job_Finder.Services
 
         public async Task JobFinderProcess()
         {
-  
-            await _progress.SetProgress(10);
-            await _webScrapingService.SearchJobs();
+            try
+            {
+                await _progress.SetProgress(10);
+                await _webScrapingService.SearchJobs();
+            }
+            catch (Exception ex) { }
 
-            await _progress.SetProgress(20);
-            _autoApplyBestJobs.autoApplyBestjobs();
+            try
+            {
+                await _progress.SetProgress(20);
+                await _autoApplyBestJobs.autoApplyBestjobs();
+            }
+            catch (Exception ex) { }
 
-            await _progress.SetProgress(40);
-            await _autoApplyEJobs.ApplyEJobs();
+            try
+            {
+                await _progress.SetProgress(40);
+                await _autoApplyEJobs.ApplyEJobs();
+            }
+            catch (Exception ex) { }
 
-            await _progress.SetProgress(60);
-            await _autoApplyLinkedin.ApplyLinkedInJobs();
+            try
+            {
+                await _progress.SetProgress(60);
+                await _autoApplyLinkedin.ApplyLinkedInJobs();
+            } catch ( Exception ex ) { }
 
-            await _progress.SetProgress(80);
-            //await _autoApplyIndeed.ApplyIndeed();
-            await Task.Delay(2000);
-            await _progress.SetProgress(100);
+            try
+            {
+                await _progress.SetProgress(80);
+                //await _autoApplyIndeed.ApplyIndeed();
+                await Task.Delay(2000);
+                await _progress.SetProgress(100);
+            } catch ( Exception ex ) { }
         }
       
         public async Task JobFinderProces(int id)

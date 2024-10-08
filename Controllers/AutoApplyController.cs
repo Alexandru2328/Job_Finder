@@ -6,6 +6,7 @@ using Job_Finder.Models;
 using Job_Finder.Services;
 using OpenQA.Selenium.Support.UI;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 namespace Job_Finder.Controllers
 {
     [Authorize]
@@ -32,7 +33,7 @@ namespace Job_Finder.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Edit(string UserPlatformEmail, string UserPlatformPassword,
-        int DomainExperience, string Message)
+        int DomainExperience, string Message, string KeywordList)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
@@ -41,6 +42,7 @@ namespace Job_Finder.Controllers
                 user.UserPlatformPassword = UserPlatformPassword;
                 user.DomainExperience = DomainExperience;
                 user.Message = Message;
+                user.KeywordList = KeywordList;
             }          
             await _userManager.UpdateAsync(user);
             return RedirectToAction("View", "AutoApply");
@@ -53,12 +55,25 @@ namespace Job_Finder.Controllers
         }
         public async Task AutoApplySession()
         {
-            await _service.JobFinderProcess();
+                await _service.JobFinderProcess();
+            try
+            {
+
+            } catch (Exception ex) { }
         }
 
         public async Task<IActionResult>Apply(int id)
         {
             await _service.JobFinderProces(id);
+            //var jobs = await _context.Jobs.ToListAsync();  // Selectezi toate joburile
+
+            //if (jobs.Any())  // Verifici dacă există joburi
+            //{
+            //    _context.Jobs.RemoveRange(jobs);  // Ștergi toate joburile dintr-o singură operație
+            //    await _context.SaveChangesAsync();  // Salvezi modificările o singură dată
+            //}
+
+
             return RedirectToAction("View", "AutoApply");
         }
         public async Task<IActionResult> GetPercentage()

@@ -19,13 +19,13 @@ $(document).ready(function () {
 
     setInterval(function () {
         fetchNotificationsCount('/Notifications/Notification', 'notificationsCount');
-    }, 5500);
+    }, 55500);
 
     setInterval(function () {
         fetchNotificationsCount('/Notifications/NotificationJobs', 'notificationsCountJobs');
-    }, 5500);
+    }, 55500);
 
     setInterval(function () {
         fetchNotificationsCount('/Notifications/NotificationApply', 'notificationsCountApply');
-    }, 5500);
+    }, 55500);
 });

@@ -18,24 +18,27 @@
         <div class="row">
             <div class="col-md-6">
                 <form id="profile-form" method="post" novalidate="novalidate">
-
                     <div class="form-floating mb-3">
-                        <input class="form-control" placeholder="Please choose your username." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformEmail)">
+                        <input class="form-control" placeholder="Please save your keyword list." disabled="" type="text" value="@Html.DisplayFor(model => model.KeywordList)">
+                        <label asp-for="KeywordList" class="form-label"></label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please save your email." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformEmail)">
                         <label asp-for="UserPlatformEmail" class="form-label"></label>
                     </div>
                     <hr />
                     <div class="form-floating mb-3">
-                        <input class="form-control" placeholder="Please choose your username." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.DomainExperience)">
+                        <input class="form-control" placeholder="Please save your experience." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.DomainExperience)">
                         <label asp-for="DomainExperience" class="form-label"></label>
                     </div>
                     <hr />
                     <div class="form-floating mb-3">
-                        <input class="form-control" placeholder="Please choose your username." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.Message)">
+                        <input class="form-control" placeholder="Please save your message." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.Message)">
                         <label asp-for="Message" class="form-label"></label>
                     </div>
                     <hr />
                     <div class="form-floating mb-3">
-                        <input  class="form-control" placeholder="Please choose your username." disabled="" type="password" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformPassword)">
+                        <input  class="form-control" placeholder="Please save your password" disabled="" type="password" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformPassword)">
                         <label asp-for="UserPlatformPassword" class="form-label"></label>
                     </div>
                 </form>

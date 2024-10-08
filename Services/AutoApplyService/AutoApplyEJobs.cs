@@ -42,8 +42,7 @@ namespace Job_Finder.Services.AutoApplyService
         public async Task ApplyEJobs(int id)
         {
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
+            //options.AddArgument("--headless");
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-gpu");
@@ -76,13 +75,13 @@ namespace Job_Finder.Services.AutoApplyService
                 await _saveJobs.SaveAsAppliedAsync(job);
             }
             await SaveCookies();
+            _driver.Close();
+
         }
         public async Task ApplyEJobs()
         {
-
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
+            //options.AddArgument("--headless");
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-gpu");
@@ -103,30 +102,36 @@ namespace Job_Finder.Services.AutoApplyService
 
             }
             await Task.Delay(2000);
-            var user = await GetCurrentUserAsync();
-            var jobList = await _context.Jobs.ToListAsync();
-            var filteredJobs = jobList.Where(j => j.Platform == "Ejobs");
-            foreach (var job in filteredJobs)
+            try
             {
-                if (job.Data > user.LastDataApply)
-                {
-                    _driver.Navigate().GoToUrl($"{job.Link}");
-                    bool applyStatus = await AutoApply();
-                    await Task.Delay(1000);
-                    Console.WriteLine(applyStatus);
-                    if (applyStatus)
-                    {
-                        Console.WriteLine();
-                        await _saveJobs.SaveAsAppliedAsync(job);
-                    }
-                    else
-                    {
-                        Console.WriteLine("go to not save");
-                        await _saveJobs.SaveAsNotAppliedAsync(job);
-                    }
-                }
-            }
+              var user = await GetCurrentUserAsync();
+                        var jobList = await _context.Jobs.ToListAsync();
+                        var filteredJobs = jobList.Where(j => j.Platform == "Ejobs");
+                        foreach (var job in filteredJobs)
+                        {
+                            if (job.Data > user.LastDataApply)
+                            {
+                                _driver.Navigate().GoToUrl($"{job.Link}");
+                                bool applyStatus = await AutoApply();
+                                await Task.Delay(1000);
+                                Console.WriteLine(applyStatus);
+                                if (applyStatus)
+                                {
+                                    Console.WriteLine();
+                                    await _saveJobs.SaveAsAppliedAsync(job);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("go to not save");
+                                    await _saveJobs.SaveAsNotAppliedAsync(job);
+                                }
+                            }
+                        }
+            } catch (Exception ex) { }
+
             await SaveCookies();
+            _driver.Close();
+
         }
         public async Task<bool> IsUserLoggedOnEJobs()
         {
@@ -250,7 +255,9 @@ namespace Job_Finder.Services.AutoApplyService
                 };
                 _context.UserCookies.Add(userCookie);
             }
-            await _context.SaveChangesAsync();
+            try {
+                await _context.SaveChangesAsync();
+            } catch (Exception ex) { }
         }
 
         public async Task LoadCookies()
@@ -266,9 +273,12 @@ namespace Job_Finder.Services.AutoApplyService
             {
                 if (userCookie.Platform == "Ejobs")
                 {
-                    var cookie = new Cookie(userCookie.Name, userCookie.Value, userCookie.Domain, userCookie.Path,
-                        userCookie.Expiry, userCookie.Secure, userCookie.HttpOnly, userCookie.SameSite);
-                    _driver.Manage().Cookies.AddCookie(cookie);
+                    try 
+                    {
+                        var cookie = new Cookie(userCookie.Name, userCookie.Value, userCookie.Domain, userCookie.Path,
+                            userCookie.Expiry, userCookie.Secure, userCookie.HttpOnly, userCookie.SameSite);
+                        _driver.Manage().Cookies.AddCookie(cookie);
+                    } catch (Exception ex) { }
                 }
             }
         }

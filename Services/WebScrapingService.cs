@@ -16,7 +16,7 @@ namespace Job_Finder.Services
     public class WebScrapingService
     {
         private readonly AppDbContext _context;
-        private readonly AutoApplyLinkedinService _autoApplyService ;
+        private readonly AutoApplyLinkedinService _autoApplyService;
         private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebDriver _driver;
@@ -33,8 +33,12 @@ namespace Job_Finder.Services
         public async Task<AppUser> GetCurrentUserAsync()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
             return await _userManager.FindByIdAsync(userId);
+        }
+        public List<string> getListWords(string keyWordsString)
+        { 
+            return keyWordsString.Split(',').ToList(); 
         }
         public async Task SearchJobs()
         {
@@ -46,13 +50,13 @@ namespace Job_Finder.Services
             }
             await Task.Delay(1000);
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
-            options.AddArgument("--disable-dev-shm-usage");
-            options.AddArgument("--no-sandbox");
-            options.AddArgument("--disable-gpu");
-            options.AddArgument("--disable-blink-features=AutomationControlled");
-            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
+            //options.AddArgument("--headless");
+            //options.AddArgument("--start-maximized");
+            //options.AddArgument("--disable-dev-shm-usage");
+            //options.AddArgument("--no-sandbox");
+            //options.AddArgument("--disable-gpu");
+            //options.AddArgument("--disable-blink-features=AutomationControlled");
+            //options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
 
 
             _driver = new ChromeDriver(options);
@@ -61,7 +65,7 @@ namespace Job_Finder.Services
             BestJobs bestJobs = new BestJobs(_context, _driver);
             Indeed indeed = new Indeed(_context, _driver);
 
-            List<string> keyWords = new List<string> { "junior web developer", "software developer", ".Net Developer" };
+            List<string> keyWords = getListWords(user.KeywordList);
 
 
             foreach (string key in keyWords)

@@ -1,0 +1,25 @@
+﻿
+@model AppUser
+@{
+    ViewData["Title"] = "SaveMail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>SaveMail</h1>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div class="form-group">
+                <label asp-for="MailCompani" class="control-label"></label>
+                <textarea asp-for="MailCompani" class="form-control"> </textarea>
+                <span asp-validation-for="MailCompani" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -32,14 +32,17 @@ namespace Job_Finder.Services.AutoApplyService
 
         private async Task<AppUser> GetCurrentUserAsync()
         {
+            try 
+            {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _userManager.FindByIdAsync(userId);
+            
+            } catch (Exception ex){ return null; }
         }
         public async Task autoApplyBestjobs(int id)
         {
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
+            //options.AddArgument("--headless");
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-gpu");
@@ -74,13 +77,14 @@ namespace Job_Finder.Services.AutoApplyService
                 await _saveJobs.SaveAsNotAppliedAsync(job);
             }
             await SaveCookies();
+            _driver.Close();
+
         }
 
-            public async Task autoApplyBestjobs()
+        public async Task autoApplyBestjobs()
         {
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
+            //options.AddArgument("--headless");
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-gpu");
@@ -124,6 +128,8 @@ namespace Job_Finder.Services.AutoApplyService
             }
             Console.WriteLine("test");
             await SaveCookies();
+            _driver.Close();
+
         }
 
         public async Task<bool> IsUserLoggedOnBestjobs()

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Job_Finder.Controllers;
 
 
 namespace Job_Finder.Services.AutoApplyService
@@ -23,14 +24,17 @@ namespace Job_Finder.Services.AutoApplyService
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebDriver _driver;
         private readonly SaveJobs _saveJobs;
+        private readonly NotificationServices _notification;
+
 
         public AutoApplyLinkedinService(AppDbContext context, UserManager<AppUser> userManager,
-            IHttpContextAccessor httpContextAccessor, SaveJobs saveJobs)
+            IHttpContextAccessor httpContextAccessor, SaveJobs saveJobs, NotificationServices notification)
         {
             _context = context;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             _saveJobs = saveJobs;
+            _notification = notification;
         }
 
 
@@ -44,8 +48,7 @@ namespace Job_Finder.Services.AutoApplyService
         {
             var user = await GetCurrentUserAsync();
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
+            //options.AddArgument("--headless");
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-gpu");
@@ -55,17 +58,11 @@ namespace Job_Finder.Services.AutoApplyService
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.linkedin.com/home");
-
-            await LoadCookies();
             await Task.Delay(1000);
             bool isLogin = await IsUserLoggedOnLinkedIn();
             if (!isLogin && user.AutoAplly)
             {
                 await AuthenticateLinkedIn();
-            } else
-            {
-                await SaveUserCookei();
-                await LoadCookies();
             }
             await Task.Delay(9000);
             var job = await _context.Jobs.FindAsync(id);
@@ -79,8 +76,10 @@ namespace Job_Finder.Services.AutoApplyService
             }
             else
             {
-                await _saveJobs.SaveAsNotAppliedAsync(job);
+                //await _saveJobs.SaveAsNotAppliedAsync(job);
             }
+            _driver.Close();
+
             //await SaveCookies();
         }
 
@@ -88,14 +87,13 @@ namespace Job_Finder.Services.AutoApplyService
         {
             var user = await GetCurrentUserAsync();
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("--window-size=1920,1080");
+            //options.AddArgument("--headless");
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-gpu");
             options.AddArgument("--disable-blink-features=AutomationControlled");
             options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            options.AddArgument("--start-maximized");
+            options.AddArgument("--start-minimaiz");
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1500);
             _driver.Navigate().GoToUrl("https://www.linkedin.com/home");
@@ -114,7 +112,7 @@ namespace Job_Finder.Services.AutoApplyService
                 await LoadCookies();
             }
             await Task.Delay(2000);
-            var jobList = await _context.Jobs.ToListAsync();
+            var jobList = await _context.Jobs.Where(j => j.Platform == "Linkedin").ToListAsync();
             var filteredJobs = await _context.Jobs.OrderByDescending(j => j.Data)
                     .ToListAsync();
             foreach (var job in filteredJobs)
@@ -131,10 +129,11 @@ namespace Job_Finder.Services.AutoApplyService
                     else
                     {
                         await _saveJobs.SaveAsNotAppliedAsync(job);
+                        await _notification.CreateNotification(user, job);
                     }
                 }
             }
-
+            _driver.Close();
             ////await SaveCookies();
         }
 
@@ -244,7 +243,6 @@ namespace Job_Finder.Services.AutoApplyService
 
         public async Task<bool> IsUserLoggedOnLinkedIn()
         {
-            _driver.Navigate().GoToUrl("https://www.linkedin.com/home");
             try
             {
                 var loginButton = _driver.FindElement(By.ClassName("nav__button-secondary"));

@@ -1,0 +1,31 @@
+﻿@model AppUser
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>View</h1>
+<div>
+    <h4>Index</h4>
+    <hr />
+
+    <div class="col-md-9">
+        <h3>Do you wanth to send a mail ?</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <form id="profile-form" method="post" novalidate="novalidate">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please save your Mail for Company." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.Message)">
+                        <label asp-for="MailCompani" class="form-label"></label>
+                    </div>
+                    <hr />
+                   
+                </form>
+            </div>
+        </div>
+        <div>
+            <a asp-controller="EmailSender" asp-action="Edit" class="btn btn-success">Edit</a>
+
+        </div>
+    </div>
+</div>

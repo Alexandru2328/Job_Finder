@@ -22,8 +22,13 @@ namespace Job_Finder.Services.AutoApplyService
 
         public async Task<AppUser> GetCurrentUserAsync()
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return await _userManager.FindByIdAsync(userId);
+            try
+            {
+                var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return await _userManager.FindByIdAsync(userId);
+
+            } catch (Exception ex) { }
+            return null;
         }
 
         public async Task SaveAsAppliedAsync(Job jobSent)
