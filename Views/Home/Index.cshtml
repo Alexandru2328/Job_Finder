@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job_Finder</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="~/js/UpdateProgressBar.js"></script> <!-- Scriptul tău personalizat -->
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Header -->
+        <header class="text-center mb-5">
+            <h1 class="display-4">Job_Finder</h1>
+            <p class="lead">Un agregator de anunțuri online de pe platforme precum BestJobs, EJobs, LinkedIn și Indeed.</p>
+        </header>
+
+        <!-- Main Section -->
+        <section class="row">
+            <div class="col-md-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">BestJobs</h5>
+                        <p class="card-text">Căutare și aplicare la anunțuri pe BestJobs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">eJobs</h5>
+                        <p class="card-text">Căutare și aplicare la anunțuri pe eJobs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">LinkedIn</h5>
+                        <p class="card-text">Căutare și aplicare la anunțuri pe LinkedIn.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Indeed</h5>
+                        <p class="card-text">Căutare și aplicare la anunțuri pe Indeed.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center mt-5">
+            <p>&copy; 2024 Job_Finder. Toate drepturile rezervate.</p>
+        </footer>
+    </div>
+    @* <div class="col-md-6">
+        <div>
+            <a asp-controller="AutoApply" asp-action="AutoApplySession" onclick="ShowProgressBar()" id="startButton" class="btn btn-success">Start a new Auto Apply Session</a>
+        </div>
+        <br />
+        <div class="form-floating mb-3" id="progress" style="display: none;">
+            <div>
+                <div>
+                    <p id="text">Search Process 🔍 </p>
+                </div>
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div class="progress">
+                <div id="progressBar" class="progress-bar" role="progressbar" style="width: 1%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100">1%</div>
+            </div>
+        </div>
+    </div> *@
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

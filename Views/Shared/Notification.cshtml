@@ -1,0 +1,45 @@
+﻿@using Job_Finder.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/notification.js"></script>
+</head>
+<body>
+    <ul class="navbar-nav">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <li class="nav-item dropdown">
+                <a class="btn position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown">
+                    <span>🔔</span>
+                    <span id="notificationsCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="notificationsDropdown">
+                    <li>
+                        <a class="dropdown-item position-relative" href="/Notifications/Index">
+                            <span>Jobs Found</span>
+                            <span id="notificationsCountJobs" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                        </a>
+                    </li>
+                    <hr />
+                    <li>
+                        <a class="dropdown-item position-relative" href="/Notifications/Apply">
+                            <span>Apply</span>
+                            <span id="notificationsCountApply" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+    </ul>
+</body>
+</html>

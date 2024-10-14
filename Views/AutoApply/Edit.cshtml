@@ -1,0 +1,61 @@
+﻿@model AppUser
+
+
+@{
+    ViewData["Title"] = "AutoApplyManager";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>AutoApplyManager</h1>
+
+<h4> </h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="KeywordList" class="control-label"></label>
+                <input asp-for="KeywordList" class="form-control" />
+                <span asp-validation-for="KeywordList" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserPlatformEmail" class="control-label"></label>
+                <input asp-for="UserPlatformEmail" class="form-control" />
+                <span asp-validation-for="UserPlatformEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserPlatformPassword" class="control-label"></label>
+                <input asp-for="UserPlatformPassword" class="form-control" type="password" />
+                <span asp-validation-for="UserPlatformPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DomainExperience" class="control-label"></label>
+                <input asp-for="DomainExperience" class="form-control" />
+                <span asp-validation-for="DomainExperience" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Message" class="control-label"></label>
+                <textarea asp-for="Message" class="form-control"> </textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MailCompani" class="control-label"></label>
+                <textarea asp-for="MailCompani" class="form-control"> </textarea>
+                <span asp-validation-for="MailCompani" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div>
+    <a asp-controller="AutoApply"  asp-action="View">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

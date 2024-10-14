@@ -1,0 +1,78 @@
+﻿@model AppUser
+
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>View</h1>
+
+<div>
+    <h4>AutoApply</h4>
+    <hr />
+
+    <div class="col-md-9">
+
+
+        <h3>Auto Apply Manager</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <form id="profile-form" method="post" novalidate="novalidate">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please save your keyword list." disabled="" type="text" value="@Html.DisplayFor(model => model.KeywordList)">
+                        <label asp-for="KeywordList" class="form-label"></label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please save your email." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformEmail)">
+                        <label asp-for="UserPlatformEmail" class="form-label"></label>
+                    </div>
+                    <hr />
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please save your experience." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.DomainExperience)">
+                        <label asp-for="DomainExperience" class="form-label"></label>
+                    </div>
+                    <hr />
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please save your message." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.Message)">
+                        <label asp-for="Message" class="form-label"></label>
+                    </div>
+                    <hr />
+                    <div class="form-floating mb-3">
+                        <input class="form-control" placeholder="Please save your mail." disabled="" type="text" id="Username" name="Username" value="@Html.DisplayFor(model => model.MailCompani)">
+                        <label asp-for="MailCompani" class="form-label"></label>
+                    </div>
+                    <hr />
+                    <div class="form-floating mb-3">
+                        <input  class="form-control" placeholder="Please save your password" disabled="" type="password" id="Username" name="Username" value="@Html.DisplayFor(model => model.UserPlatformPassword)">
+                        <label asp-for="UserPlatformPassword" class="form-label"></label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <a asp-controller="AutoApply" asp-action="Edit" class="btn btn-success">Edit</a>
+            
+        </div>
+    </div>
+</div>
+<br />
+<div class="col-md-6">
+    <div id="button">
+        <a asp-controller="AutoApply" asp-action="AutoApplySession" onclick="ShowProgressBar()" id="startButton" class="btn btn-success">Start a new Auto Apply Session</a>
+    </div>
+    <br />
+    <div class="form-floating mb-3" id="progress" style="display: none;">
+        <div>
+            <div>
+                <p id="text">Search Process 🔍 </p>
+            </div>
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+        <div class="progress">
+            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 1%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100">1%</div>
+        </div>
+    </div>
+</div>

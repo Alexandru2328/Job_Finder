@@ -1,0 +1,72 @@
+﻿@model AppUser
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card border-secondary mb-3" style="max-width: 45rem;">
+    <form asp-action="Preview" method="post">
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="positions">Position for</label>
+                <input class="form-control" id="positions" name="positions" rows="3">
+            </div>
+            <div class="col-6">
+                <label for="companiName">Company Name</label>
+                <input class="form-control" id="companiName" name="companiName" rows="3">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="mailAddress">Email Address</label>
+                <input class="form-control" id="mailAddress" name="mailAddress" rows="3">
+            </div>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-success">Send
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+<div>
+    <div class="card border-secondary mb-3" style="max-width: 45rem;">
+        <div class="card-header">Email</div>
+        <div class="card-body">
+            <div id="email-content" class="formatted-text" style="white-space: pre-line; max-height: 100px; overflow: hidden; transition: max-height 0.5s ease;">
+                @ViewBag.Email
+            </div>
+        </div>
+        <div>
+            <a asp-controller="EmailSender" asp-action="Edit" class="btn btn-success">Edit</a>
+            <button id="toggleButton" class="btn btn-info" onclick="toggleSize()">Show More ⮛</button>
+        </div>
+    </div>
+    <script>
+        function toggleSize() {
+            var content = document.getElementById("email-content");
+            var button = document.getElementById("toggleButton");
+
+            if (content.style.maxHeight === "100px") {
+                content.style.maxHeight = content.scrollHeight + "px";
+                button.textContent = "Show Less ⮙";
+            } else {
+                content.style.maxHeight = "100px";
+                button.textContent = "Show More ⮛";
+            }
+        }
+    </script>
+</div>
+@* <div class="card text-white bg-secondary mb-3" style="max-width: 45rem;">
+        <div class="card-header">Email</div>
+            <div class="card-body">
+                <div class="formatted-text" style="white-space: pre-line;">
+                    @ViewBag.Email
+                </div>
+            </div>
+            <div>
+                <a asp-controller="EmailSender" asp-action="Edit" class="btn btn-success">Edit</a>
+            </div>
+        </div>
+    </div> *@

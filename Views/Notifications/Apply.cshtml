@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Job_Finder.Models.UserNotification>
+
+@{
+    ViewData["Title"] = "Web Scraping - Search Results";
+}
+<div>
+   @*  <a class="notification" href="/Notifications/SeeAll">
+        <span>See All</span>
+    </a>
+ *@
+    <div>
+        @foreach (var not in Model)
+        {
+            if (!not.ApplicationStatus)
+            {
+                <div class="card">
+                    <div class="card-header">
+                        Failure to apply ! 😥
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Sorry but I couldn't apply for this job!! @Html.Raw(not.Title)</h5>
+                        <p class="card-text">Can you please take a look ?</p>
+                        <a class="btn btn-primary" href="@not.Link">Link</a>
+                        <h2><a class="btn btn-primary" asp-action="SetAsSaved" asp-route-id="@not.Id">Save as applied!</a></h2>
+                        <a asp-controller="AutoApply" asp-action="Apply" asp-route-id="@not.JobId" class="btn btn-success">Try Apply</a>
+                        <h2><a class="btn btn-primary" asp-action="Delete" asp-route-id="@not.Id">Delete</a></h2>
+
+                    </div>
+                </div>
+              <br />
+                
+            }
+        }
+
+    </div>
+</div>

@@ -1,0 +1,146 @@
+﻿@model IEnumerable<Job_Finder.Models.Job>
+<h5>@ViewBag.Count ads </h5>
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <form asp-action="Search" class="form-inline">
+                <div class="form-group mb-2">
+                    <input type="submit" value="Search" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Linkedin Jobs -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-12 mt-4 pt-2">
+            <div class="section-title">
+                <h3 class="text-center">Linkedin</h3>
+                <hr class="my-4">
+            </div>
+            <div class="row">
+                @foreach (var job in Model.Where(j => j.Platform == "Linkedin"))
+                {
+                    <div class="col-12 mt-4 pt-2 job-card">
+                        <div class="card border-0 bg-light rounded shadow">
+                            <div class="card-body p-4">
+                                <span class="badge rounded-pill bg-primary float-md-end mb-3 mb-sm-0">@job.Platform</span>
+                                <h5>@Html.Raw(job.Title)</h5>
+                                <div class="mt-3">
+                                    <span class="text-muted d-block"><i class="fa fa-home" aria-hidden="true"></i> <a href="#" target="_blank" class="text-muted">@Html.Raw(job.Company)</a></span>
+                                    <span class="text-muted d-block"><i class="fa fa-map-marker" aria-hidden="true"></i> @Html.Raw(job.Details)</span>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="@job.Link" class="btn btn-primary">View Details</a>
+                                    <p>Found on date : @job.Data</p>
+                                    @if (job.Data > ViewBag.LastDataApplied)
+                                    {
+                                        <a asp-controller="AutoApply" asp-action="Apply" asp-route-id="@job.Id" class="btn btn-success">Apply</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Indeed Jobs -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-12 mt-4 pt-2">
+            <div class="section-title">
+                <h3 class="text-center">Indeed</h3>
+                <hr class="my-4">
+            </div>
+            <div class="row">
+                @foreach (var job in Model.Where(j => j.Platform == "Indeed"))
+                {
+                    <div class="col-12 mt-4 pt-2 job-card">
+                        <div class="card border-0 bg-light rounded shadow">
+                            <div class="card-body p-4">
+                                <span class="badge rounded-pill bg-primary float-md-end mb-3 mb-sm-0">Indeed</span>
+                                <h5>@Html.Raw(job.Title)</h5>
+                                <div class="mt-3">
+                                    <span class="text-muted d-block"><i class="fa fa-home" aria-hidden="true"></i> <a href="#" target="_blank" class="text-muted">@Html.Raw(job.Company)</a></span>
+                                    <span class="text-muted d-block"><i class="fa fa-map-marker" aria-hidden="true"></i> @Html.Raw(job.Details)</span>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="@job.Link" class="btn btn-primary">View Details</a>
+                                     <p>Found on date : @job.Data</p>
+                                     @if (job.Data >= ViewBag.LastDataApplied)
+                                    {
+                                        <a asp-controller="AutoApply" asp-action="Apply" asp-route-id="@job.Id" class="btn btn-success">Apply</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- BestJobs -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-12 mt-4 pt-2">
+            <div class="section-title">
+                <h3 class="text-center">BestJobs</h3>
+                <hr class="my-4">
+            </div>
+            <div class="row">
+                @foreach (var job in Model.Where(j => j.Platform == "BestJobs"))
+                {
+                    <div class="col-12 mt-4 pt-2 job-card">
+                        <div class="card border-0 bg-light rounded shadow">
+                            <div class="card-body p-4">
+                                <span class="badge rounded-pill bg-primary float-md-end mb-3 mb-sm-0">BestJobs</span>
+                                <h5>@Html.Raw(job.Title)</h5>
+                                <div class="mt-3">
+                                    <span class="text-muted d-block"><i class="fa fa-home" aria-hidden="true"></i> <a href="#" target="_blank" class="text-muted">@Html.Raw(job.Company)</a></span>
+                                    <span class="text-muted d-block"><i class="fa fa-map-marker" aria-hidden="true"></i> @Html.Raw(job.Details)</span>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="@job.Link" class="btn btn-primary">View Details</a>
+                                    <p>Found on date : @job.Data</p>
+                                     @if (job.Data >= ViewBag.LastDataApplied)
+                                    {
+                                        <a asp-controller="AutoApply" asp-action="Apply" asp-route-id="@job.Id" class="btn btn-success">Apply</a>
+                                    } 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- EJobs -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-12 mt-4 pt-2">
+            <div class="section-title">
+                <h3 class="text-center">EJobs</h3>
+                <hr class="my-4">
+            </div>
+            <div class="row">
+                @foreach (var job in Model.Where(j => j.Platform == "Ejobs"))
+                {
+                    <div class="col-12 mt-4 pt-2 job-card">
+                        <div class="card border-0 bg-light rounded shadow">
+                            <div class="card-body p-4">
+                                <span class="badge rounded-pill bg-primary float-md-end mb-3 mb-sm-0">EJobs</span>
+                                <h5>@Html.Raw(job.Title)</h5>
+                                <div class="mt-3">
+                                    <span class="text-muted d-block"><i class="fa fa-home" aria-hidden="true"></i> <a href="#" target="_blank" class="text-muted">@Html.Raw(job.Company)</a></span>
+                                    <span class="text-muted d-block"><i class="fa fa-map-marker" aria-hidden="true"></i> @Html.Raw(job.Details)</span>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="@job.Link" class="btn btn-primary">View Details</a>
+                                    <p>Found on date : @job.Data</p>
+                                    @if (job.Data >= ViewBag.LastDataApplied)
+                                    {
+                                        <a asp-controller="AutoApply" asp-action="Apply" asp-route-id="@job.Id" class="btn btn-success">Apply</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
