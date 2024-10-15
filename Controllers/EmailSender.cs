@@ -33,10 +33,12 @@ namespace Job_Finder.Controllers
             }
             return View();
         }
+        
         public async Task<IActionResult> Edit()
         {
             return View();
         }
+        
         [HttpPost]
         public async Task<IActionResult> Save(string emailText)
         {
@@ -90,11 +92,6 @@ namespace Job_Finder.Controllers
                         Attachment attachment = new Attachment(filePath);
                         mailMessage.Attachments.Add(attachment);
                     }
-                    else
-                    {
-                        Console.WriteLine("File does not exist: " + filePath);
-                    }
-
                     await smtpClient.SendMailAsync(mailMessage);
                 }
             }
