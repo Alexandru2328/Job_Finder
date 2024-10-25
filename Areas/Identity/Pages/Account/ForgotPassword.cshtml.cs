@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Net.Mail;
+using System.Net;
 
 namespace Job_Finder.Areas.Identity.Pages.Account
 {
@@ -70,6 +73,34 @@ namespace Job_Finder.Areas.Identity.Pages.Account
                     pageHandler: null,
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
+
+                //var user = await _userManager.GetUserAsync(User);
+                string filePath = user.UserCV;
+                try
+                {
+                    MailMessage mailMessage = new MailMessage(user.UserPlatformEmail, Input.Email);
+                    mailMessage.From = new MailAddress(user.UserPlatformEmail);
+                    mailMessage.To.Add(Input.Email);
+                    mailMessage.Subject = "Reset Password";
+                    mailMessage.Body = $"Please reset your password by: {HtmlEncoder.Default.Encode(callbackUrl)}";
+
+
+                    using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
+                    {
+                        smtpClient.UseDefaultCredentials = false;
+                        smtpClient.Credentials = new NetworkCredential(user.UserPlatformEmail, user.UserEmailKey);
+                        smtpClient.EnableSsl = true;
+
+                      
+
+                        await smtpClient.SendMailAsync(mailMessage);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest("Error sending email: " + ex.Message);
+                }
+
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,

@@ -43,7 +43,7 @@ namespace Job_Finder.Controllers
                 user.DomainExperience = DomainExperience;
                 user.Message = Message;
                 user.KeywordList = KeywordList;
-                user.MailCompani = MailCompani;
+                user.MailCompany = MailCompani;
             }          
             await _userManager.UpdateAsync(user);
             return RedirectToAction("View", "AutoApply");

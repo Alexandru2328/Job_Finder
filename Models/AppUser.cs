@@ -18,10 +18,12 @@ namespace Job_Finder.Models
         public string UserPlatformPassword { get; set; } = string.Empty;
         public int DomainExperience { get; set; } = 0;
         public string Message { get; set; } = string.Empty;
-        public string MailCompani { get; set; } = string.Empty;
+        public string MailCompany { get; set; } = string.Empty;
         public string KeywordList { get; set; } = string.Empty;
         public ICollection<UserNotification> UserNotifications { get; set; }
         public string UserEmailKey { get; set; }
+        public string UserCV { get; set; }
+        public string UserSubjecMail { get; set; }
 
     }
 }

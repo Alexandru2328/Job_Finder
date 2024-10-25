@@ -16,7 +16,8 @@ namespace Job_Finder.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
 
-        public EmailSender(IHttpContextAccessor httpContextAccessor, AppDbContext context, UserManager<AppUser> userManager)
+        public EmailSender(IHttpContextAccessor httpContextAccessor, AppDbContext context,
+            UserManager<AppUser> userManager)
         { 
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
@@ -29,21 +30,40 @@ namespace Job_Finder.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
-                ViewBag.Email = user.MailCompani;
+                ViewBag.Email = user.MailCompany;
+                ViewBag.UserSubjecMail = user.UserSubjecMail;
+                ViewBag.UserCV = user.UserCV;
             }
             return View();
         }
-        
         public async Task<IActionResult> Edit()
         {
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.Text = user.MailCompany;
+
             return View();
         }
-        
+
+        public async Task<IActionResult> EditSubject()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.Text = user.UserSubjecMail;
+
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Save(string emailText)
         {
             var user = await _userManager.GetUserAsync(User);
-            user.MailCompani = emailText;
+            user.MailCompany = emailText;
+            await _userManager.UpdateAsync(user);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> SaveSubject(string emailSubject)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            user.UserSubjecMail = emailSubject;
             await _userManager.UpdateAsync(user);
             return RedirectToAction("Index");
         }
@@ -54,14 +74,14 @@ namespace Job_Finder.Controllers
             string email = "";
             if (user != null)
             {
-                email = user.MailCompani;
+                email = user.MailCompany;
                 if (!string.IsNullOrEmpty(email))
                 {
                     email = email.Replace("(companiName)", companiName);
                     email = email.Replace("(positions)", positions);
                 }
             }
-            string subject = "Aplicație pentru o poziție în cadrul companiei " + companiName;
+            string subject = user.UserSubjecMail + companiName;
             ViewBag.MailAddress = mailAddress;
             ViewBag.Email = email;
             ViewBag.Subject = subject;
@@ -69,10 +89,10 @@ namespace Job_Finder.Controllers
             return View();
         }
 
-        public async Task<IActionResult> SendMailAsync(string mailAddress, string subject, string email)
+        public async Task<IActionResult> SendMail(string mailAddress, string subject, string email)
         {
             var user = await _userManager.GetUserAsync(User);
-            string filePath = @"C:\Users\alexa\Downloads\CV Alexandru Cosercar.pdf"; 
+            string filePath = user.UserCV; 
             try
             {
                 MailMessage mailMessage = new MailMessage(user.UserPlatformEmail, mailAddress);
@@ -92,6 +112,11 @@ namespace Job_Finder.Controllers
                         Attachment attachment = new Attachment(filePath);
                         mailMessage.Attachments.Add(attachment);
                     }
+                    else
+                    {
+                        Console.WriteLine("File does not exist: " + filePath);
+                    }
+
                     await smtpClient.SendMailAsync(mailMessage);
                 }
             }

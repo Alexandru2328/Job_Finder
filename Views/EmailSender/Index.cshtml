@@ -31,6 +31,13 @@
     </form>
 </div>
 <div>
+    <div class="card border-secondary mb-3" style="max-width: 45rem; max-height: fit-content;">
+        <div class="card-header">Subject</div>
+        <div class="card-body">@ViewBag.UserSubjecMail</div>
+        <div>
+            <a asp-controller="EmailSender" asp-action="EditSubject" class="btn btn-success">Edit</a>
+        </div>
+    </div>
     <div class="card border-secondary mb-3" style="max-width: 45rem;">
         <div class="card-header">Email</div>
         <div class="card-body">
@@ -40,7 +47,7 @@
         </div>
         <div>
             <a asp-controller="EmailSender" asp-action="Edit" class="btn btn-success">Edit</a>
-            <button id="toggleButton" class="btn btn-info" onclick="toggleSize()">Show More ⮛</button>
+               <button id="toggleButton" class="btn btn-info" onclick="toggleSize()">Show More ⮛</button>
         </div>
     </div>
     <script>
@@ -57,6 +64,15 @@
             }
         }
     </script>
+
+    <form asp-action="UploadCv" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="cvFile">Upload CV</label>
+            <input type="file" class="form-control" id="cvFile" name="cvFile" accept=".pdf">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
 </div>
 @* <div class="card text-white bg-secondary mb-3" style="max-width: 45rem;">
         <div class="card-header">Email</div>
