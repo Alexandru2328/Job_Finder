@@ -7,6 +7,7 @@ using Job_Finder.Services.AutoApplyService;
 using System.Net.Mail;
 using Microsoft.SqlServer.Management.Smo;
 using System.Net;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Job_Finder.Controllers
 {
@@ -15,16 +16,17 @@ namespace Job_Finder.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public EmailSender(IHttpContextAccessor httpContextAccessor, AppDbContext context,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment)
         { 
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _context = context;
-            
+            _webHostEnvironment = webHostEnvironment;
         }
-        
+
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -32,7 +34,8 @@ namespace Job_Finder.Controllers
             {
                 ViewBag.Email = user.MailCompany;
                 ViewBag.UserSubjecMail = user.UserSubjecMail;
-                ViewBag.UserCV = user.UserCV;
+                ViewBag.CVPath = user.CvPath;
+                ViewBag.CvName = user.UserCv;
             }
             return View();
         }
@@ -92,7 +95,7 @@ namespace Job_Finder.Controllers
         public async Task<IActionResult> SendMail(string mailAddress, string subject, string email)
         {
             var user = await _userManager.GetUserAsync(User);
-            string filePath = user.UserCV; 
+            string filePath = user.UserCv; 
             try
             {
                 MailMessage mailMessage = new MailMessage(user.UserPlatformEmail, mailAddress);
@@ -126,6 +129,33 @@ namespace Job_Finder.Controllers
             }
 
             return View();
+        }
+
+        public async Task<IActionResult> UploadCv(IFormFile cvFile)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null || cvFile == null || cvFile.Length == 0)
+            {
+                return BadRequest("Invalid user or file.");
+            }
+            string userFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", user.Id);
+            if (!Directory.Exists(userFolder))
+            {
+                Directory.CreateDirectory(userFolder);
+            }
+
+            string filePath = Path.Combine(userFolder, Path.GetFileName(cvFile.FileName));
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await cvFile.CopyToAsync(stream);
+            }
+
+            user.CvPath = $"/uploads/{user.Id}/{Path.GetFileName(cvFile.FileName)}";
+            user.UserCv = cvFile.FileName;
+            await _userManager.UpdateAsync(user);
+            return RedirectToAction("Index"); 
         }
     }
 }

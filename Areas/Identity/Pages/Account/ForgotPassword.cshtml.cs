@@ -73,9 +73,6 @@ namespace Job_Finder.Areas.Identity.Pages.Account
                     pageHandler: null,
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
-
-                //var user = await _userManager.GetUserAsync(User);
-                string filePath = user.UserCV;
                 try
                 {
                     MailMessage mailMessage = new MailMessage(user.UserPlatformEmail, Input.Email);
@@ -99,14 +96,7 @@ namespace Job_Finder.Areas.Identity.Pages.Account
                 catch (Exception ex)
                 {
                     return BadRequest("Error sending email: " + ex.Message);
-                }
-
-
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
+                }              
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
 

@@ -66,11 +66,20 @@
     </script>
 
     <form asp-action="UploadCv" method="post" enctype="multipart/form-data">
-        <div class="form-group">
+        @if (!string.IsNullOrEmpty(@ViewBag.CVPath))
+
+
+
+        {
+            <div class="card-header"> @ViewBag.CvName</div>
+            <a href="@Url.Content(@ViewBag.CVPath)" target="_blank" class="btn btn-primary">Download CV</a>
+        }
+        <div class="form-group" style="max-width: 25rem;>
             <label for="cvFile">Upload CV</label>
             <input type="file" class="form-control" id="cvFile" name="cvFile" accept=".pdf">
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
+
     </form>
 
 </div>
